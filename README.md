@@ -1,5 +1,3 @@
-# Local Tickets
-
 ## Overview
 This simple moodle plugin allows users to submit support tickets to communicate their issues and receive assistance from administrators.
 
