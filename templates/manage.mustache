@@ -1,0 +1,74 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+  }}
+
+<h3>{{#str}}manage_tickets, local_tickets{{/str}}</h3>
+<div class="container mt-5">
+    {{^hastickets}}
+        <div class="alert alert-warning" role="alert">
+          No Tickets Found.
+        </div>
+    {{/hastickets}}
+
+    {{{filterform}}}
+    {{#canviewtickets}}
+        {{#hastickets}}
+            <span class="font-weight-bold">{{ticketscount}}</span> Records.
+            <div class="table-responsive-md mt-2">
+                <table class="table tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Operation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#tickets}}
+                            <tr>
+                                <td>{{id}}</td>
+                                <td>{{title}}</td>
+                                <td>{{description}}</td>
+                                <td class="status-{{status}}">{{status}}</td>
+                                <td>{{created_at}}</td>
+                                <td>
+                                    <a href="{{config.wwwroot}}/local/tickets/view.php?id={{id}}" type="button" class="p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                        </svg>
+                                    </a>
+                                    {{#candeletetickets}}
+                                        <a class="text-danger p-2" href="{{config.wwwroot}}/local/tickets/view.php?id={{id}}&action=delete" type="button" class="btn btn-danger">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                            </svg>
+                                        </a>
+                                    {{/candeletetickets}}
+                                </td>
+                            </tr>
+                        {{/tickets}}
+                    </tbody>
+                </table>
+            </div>
+
+            {{{pager}}}
+            {{/hastickets}}
+        {{/canviewtickets}}
+</div>

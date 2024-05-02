@@ -1,0 +1,89 @@
+ {{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+  }}
+
+<div class="container">
+<div class="table-responsive">
+    <table class="ticket-info-table" width="100%">
+        <tbody>
+            <tr>
+                <td width="25%">{{#str}}ticket_id, local_tickets{{/str}}:</td>
+                <td width="25%">{{ticket.id}}</td>
+                <td width="25%">{{#str}}status, local_tickets{{/str}}:</td>
+                <td class="status-{{ticket.status}}" width="25%">{{ticket.status}}</td>
+            </tr>
+            <tr>
+                <td width="25%">{{#str}}reported_by, local_tickets{{/str}}:</td>
+                <td width="25%">{{{owner_profile_img}}} &nbsp; {{owner_name}}</td>
+                <td width="25%">{{#str}}report_date, local_tickets{{/str}}:</td>
+                <td width="25%">{{ticket.created_at}}</td>
+            </tr>
+            <tr>
+                <td width="25%">{{#str}}last_updated_by, local_tickets{{/str}}:</td>
+                <td width="25%">{{{updated_by_profile_img}}} &nbsp; {{updated_by_name}}</td>
+                <td width="25%">{{#str}}last_updated_at, local_tickets{{/str}}:</td>
+                <td width="25%">{{ticket.updated_at}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="my-5">
+    <h1 class="mb-3">{{ticket.title}}</h1>
+    <p>
+        {{ticket.description}}
+    </p>
+</div>
+
+{{#canedittickets}}
+    {{{statusform}}}
+{{/canedittickets}}
+
+<hr>
+
+<div class="mt-3 p-2">
+{{#commentformmessage}}
+    <div class="alert alert-warning" role="alert">
+        {{#str}}closed_comments_message, local_tickets{{/str}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+    </div>
+{{/commentformmessage}}
+    <h5>{{#str}}comments, local_tickets{{/str}}</h5>
+
+    <ul class="ticket-comment-section mt-3 p-0">
+        {{#comments}}
+                <li>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between">
+                            <div>{{{owner_profile_picture}}} &nbsp; {{owner_name}}</div>
+                            <div class="comment-owner mx-2 my-2">{{created_at}}</div>
+                        </div>
+                        <div class="mt-3 mx-3">
+                            <p>{{content}}</p>
+                        </div>
+
+                    </div>
+                </li>
+        {{/comments}}
+    </ul>
+
+</div>
+{{{commentform}}}
+
+
+</div>

@@ -1,0 +1,60 @@
+table.tickets-table thead th,
+table.tickets-table tbody td{
+    white-space: nowrap;
+}
+
+td.status-open{
+    background-color: #238636;
+    color: white;
+    font-weight: bolder;
+}
+
+td.status-closed{
+    background-color: rgb(137, 87, 229);
+    color: white;
+    font-weight: bolder;
+}
+
+td.status-solved{
+    background-color: rgb(255, 128, 0);
+    color: white;
+    font-weight: bolder;
+}
+
+td.status-pending {
+    background-color: #baab45;
+    color: white;
+    font-weight: bolder;
+}
+
+table.ticket-info-table tr td{
+   border: 1px solid #f0f0f0;
+}
+
+table.ticket-info-table tr td:nth-of-type(odd){
+    background-color: #d0d0d0 !important;
+    text-align: right;
+    padding: 3px 15px 3px 3px;
+    font-weight: bolder;
+}
+table.ticket-info-table tr td:nth-of-type(even){
+    text-align: left;
+    padding: 3px 3px 3px 15px;
+}
+
+ul.ticket-comment-section{
+    list-style: none;
+}
+
+ul.ticket-comment-section li:not(:last-of-type){
+    border-bottom: 1px solid rgba(208, 208, 208, 0.5);
+}
+
+.comment-owner{
+    font-size: 13px;
+}
+
+.userinitials.size-50{
+    width: 50px;
+    height: 50px;
+}

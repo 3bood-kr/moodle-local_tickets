@@ -1,0 +1,61 @@
+ {{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+  }}
+
+<h3>My Tickets</h3>
+<div class="container mt-5">
+
+    {{^ticketscount}}
+        <div class="alert alert-warning" role="alert">
+          You Haven't Submitted any Tickets Yet. <a href="{{config.wwwroot}}/local/tickets/submit.php" class="alert-link">Click Here to Submit a Ticket</a>.
+        </div>
+    {{/ticketscount}}
+
+    {{#ticketscount}}
+     <span class="font-weight-bold">{{#str}}num_records, local_tickets, {{ticketscount}}{{/str}}</span> Records.
+    <div class="table-responsive-md mt-2">
+        <table class="table tickets-table">
+            <thead>
+                <tr>
+                    <th>{{#str}}id, local_tickets{{/str}}</th>
+                    <th>{{#str}}title, local_tickets{{/str}}</th>
+                    <th>{{#str}}status, local_tickets{{/str}}</th>
+                    <th>{{#str}}created_at, local_tickets{{/str}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#mytickets}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{title}}</td>
+                        <td class="status-{{status}}">{{status}}</td>
+                        <td>{{created_at}}</td>
+                        <td>
+                            <a href="{{config.wwwroot}}/local/tickets/view.php?id={{id}}" class="p-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {{/mytickets}}
+            </tbody>
+        </table>
+    </div>
+    {{/ticketscount}}
+</div>
