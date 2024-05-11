@@ -15,18 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Index Page of
+ * local tickets plugin
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_tickets\lib;
+
 require_once(__DIR__ . '/../../config.php');
-require_login();
+require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
+
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Manage Tickets');
 
+
 $renderer = $PAGE->get_renderer('local_tickets');
+
 
 echo $OUTPUT->header();
 

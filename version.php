@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details.
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2024042900;
+$plugin->version  = 2024051100;
 $plugin->requires = 2014051200;
 $plugin->component = 'local_tickets';
 $plugin->release = '1.0';

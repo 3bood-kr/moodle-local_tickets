@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Define capabilities
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,53 +24,52 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'local/tickets:submittickets' => array(
-            'riskbitmask'               => RISK_SPAM,
-            'captype'                   => 'write',
-            'contextlevel'              => CONTEXT_SYSTEM,
-            'archetypes' => array(
-                'user'                  => CAP_ALLOW,
-            )
-    ),
-    'local/tickets:deletetickets' => array(
-            'riskbitmask'               => RISK_DATALOSS,
-            'captype'                   => 'delete',
-            'contextlevel'              => CONTEXT_SYSTEM,
-            'archetypes' => array(
-                'manager'               => CAP_ALLOW,
-                'coursecreator'         => CAP_PREVENT,
-                'editingteacher'        => CAP_PREVENT,
-                'teacher'               => CAP_PREVENT,
-                'student'               => CAP_PREVENT,
-                'user'                  => CAP_PREVENT,
-            )
-    ),
-    'local/tickets:edittickets' => array(
-            'riskbitmask'               => RISK_DATALOSS,
-            'captype'                   => 'edit',
-            'contextlevel'              => CONTEXT_SYSTEM,
-            'archetypes' => array(
-                'manager'               => CAP_ALLOW,
-                'coursecreator'         => CAP_PREVENT,
-                'editingteacher'        => CAP_PREVENT,
-                'teacher'               => CAP_PREVENT,
-                'student'               => CAP_PREVENT,
-                'user'                  => CAP_PREVENT,
-            )
-        ),
-    'local/tickets:viewtickets' => array(
-            'riskbitmask'               => RISK_SPAM,
-            'captype'                   => 'read',
-            'contextlevel'              => CONTEXT_SYSTEM,
-            'archetypes' => array(
-                'manager'               => CAP_ALLOW,
-                'coursecreator'         => CAP_PREVENT,
-                'editingteacher'        => CAP_PREVENT,
-                'teacher'               => CAP_PREVENT,
-                'student'               => CAP_PREVENT,
-                'user'                  => CAP_PREVENT,
-            )
-        ),
-
-);
+$capabilities = [
+    'local/tickets:submittickets' => [
+        'riskbitmask'               => RISK_SPAM,
+        'captype'                   => 'write',
+        'contextlevel'              => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'user'                  => CAP_ALLOW,
+        ],
+    ],
+    'local/tickets:deletetickets' => [
+        'riskbitmask'               => RISK_DATALOSS,
+        'captype'                   => 'delete',
+        'contextlevel'              => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager'               => CAP_ALLOW,
+            'coursecreator'         => CAP_PREVENT,
+            'editingteacher'        => CAP_PREVENT,
+            'teacher'               => CAP_PREVENT,
+            'student'               => CAP_PREVENT,
+            'user'                  => CAP_PREVENT,
+        ],
+    ],
+    'local/tickets:edittickets' => [
+        'riskbitmask'               => RISK_DATALOSS,
+        'captype'                   => 'edit',
+        'contextlevel'              => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager'               => CAP_ALLOW,
+            'coursecreator'         => CAP_PREVENT,
+            'editingteacher'        => CAP_PREVENT,
+            'teacher'               => CAP_PREVENT,
+            'student'               => CAP_PREVENT,
+            'user'                  => CAP_PREVENT,
+        ],
+    ],
+    'local/tickets:viewtickets' => [
+        'riskbitmask'               => RISK_SPAM,
+        'captype'                   => 'read',
+        'contextlevel'              => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager'               => CAP_ALLOW,
+            'coursecreator'         => CAP_PREVENT,
+            'editingteacher'        => CAP_PREVENT,
+            'teacher'               => CAP_PREVENT,
+            'student'               => CAP_PREVENT,
+            'user'                  => CAP_PREVENT,
+        ],
+    ],
+];

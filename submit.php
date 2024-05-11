@@ -15,14 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Submit Ticket Page
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_tickets\form\submitticketform;
 use local_tickets\lib;
+
+
 require_once(__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/tickets/classes/form/create_ticket.php');
+require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
+
 require_login();
 
 $PAGE->set_url(new moodle_url('/local/tickets/submit.php'));
@@ -31,13 +37,15 @@ $PAGE->set_title('Submit a ticket');
 
 $renderer = $PAGE->get_renderer('local_tickets');
 
-$mform = new create_ticket_form();
+$mform = new submitticketform();
 
-if($mform->is_cancelled()){
+if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/tickets/index.php');
-} elseif ($mform->is_submitted() && $form_data = $mform->get_data()){
-    if(lib::submit_ticket($form_data)){
-        return redirect($CFG->wwwroot . '/local/tickets/mytickets.php', 'Ticket Submitted Successfully');
+}
+
+if ($mform->is_submitted() && $formdata = $mform->get_data()) {
+    if (lib::submit_ticket($formdata)) {
+        redirect($CFG->wwwroot . '/local/tickets/mytickets.php', 'Ticket Submitted Successfully');
     }
 }
 

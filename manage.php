@@ -15,20 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Manage Tickets Page of
+ * local tickets plugin
+ *
+ * This Page is for admins only
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_tickets\lib;
-
 require_once(__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
+require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
 require_login();
-
 
 define('TICKETS_PAGE_SIZE', 15);
 
+use local_tickets\lib;
 $PAGE->set_url(new moodle_url('/local/tickets/manage.php'));
 global $USER;
 
@@ -36,8 +39,22 @@ global $USER;
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('Manage Tickets');
 
+
+$PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
+
+
 $filterform = new filter_tickets();
 
+$action = optional_param('action', '', PARAM_NOTAGS);
+if ($action == 'delete') {
+    $ticketid = optional_param('id', '', PARAM_NOTAGS);
+    lib::init();
+    if (lib::delete_ticket($ticketid)) {
+        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'), 'removed successfully');
+    }
+}
+
+lib::seed();
 
 $renderer = $PAGE->get_renderer('local_tickets');
 

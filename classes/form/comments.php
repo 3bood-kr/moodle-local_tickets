@@ -15,30 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form to Post Ticket Comments
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . "/formslib.php");
 
-class comments extends moodleform
-{
-    function definition()
-    {
+/**
+ * Form to Post Ticket Comments
+ *
+ * This form is used in view ticket page
+ * to post comments for ticket
+ *
+ * @package    local_tickets
+ * @copyright  2024 3bood_kr
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class comments extends moodleform {
+
+    /**
+     * Form definition
+     *
+     * @return void
+     */
+    protected function definition() {
         global $CFG, $USER;
         $mform = $this->_form;
         $ticketid = required_param('id', PARAM_INT);
 
-//        $mform->addElement('editor', 'comment', get_string('comment'), array('rows' => 8));
-//        $mform->setType('comment', PARAM_RAW);
-//        $mform->addRule('comment', get_string('required'), 'required', null, 'client');
-
-        $mform->addElement('textarea', 'comment', get_string('comment', 'local_tickets'), array('rows' => 8));
+        $mform->addElement('textarea', 'comment', get_string('comment', 'local_tickets'), ['rows' => 8]);
         $mform->setType('comment', PARAM_NOTAGS);
         $mform->addRule('comment', get_string('required'), 'required');
 
-        $mform->addElement('hidden', 'id', ''); // Hidden element for the user ID
+        $mform->addElement('hidden', 'id', ''); // Hidden element for the ticket ID.
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', $ticketid);
 
