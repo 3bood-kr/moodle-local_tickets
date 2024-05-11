@@ -15,26 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form to Filter Tickets
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . "/formslib.php");
 
-
+/**
+ * Form to Filter Ticket Comments
+ *
+ * This Form is used in manage page
+ * to filter tickets by status
+ * or user id
+ *
+ * @package    local_tickets
+ * @copyright  2024 3bood_kr
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class filter_tickets extends moodleform {
-    function definition() {
-        global $CFG;
+    /**
+     * Form definition
+     *
+     * @return void
+     */
+    protected function definition() {
         $mform = $this->_form;
-        $options = array(
+        $options = [
             '' => get_string('all', 'local_tickets'),
             'open' => get_string('open', 'local_tickets'),
             'closed' => get_string('closed', 'local_tickets'),
             'pending' => get_string('pending', 'local_tickets'),
             'solved' => get_string('solved', 'local_tickets'),
-        );
-
+        ];
 
         $status = optional_param('status', '', PARAM_NOTAGS);
         $mform->addElement(
@@ -44,14 +60,12 @@ class filter_tickets extends moodleform {
             $options);
         $mform->setDefault('status', $status);
 
-
-        $created_by = optional_param('created_by', '', PARAM_INT);
+        $createdby = optional_param('created_by', '', PARAM_INT);
         $mform->addElement('text', 'created_by', get_string('created_by', 'local_tickets'));
         $mform->setType('created_by', PARAM_NOTAGS);
-        $mform->setDefault('created_by', '');
+        $mform->setDefault('created_by', $createdby);
         $mform->addHelpButton('created_by', 'filter_by_user', 'local_tickets');
 
         $this->add_action_buttons(false, 'Filter');
     }
-
 }

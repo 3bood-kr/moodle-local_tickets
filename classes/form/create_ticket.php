@@ -15,15 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form to Submit Tickets
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . "/formslib.php");
 
+/**
+ * Form to Submit Tickets
+ *
+ * This form is To Submit Tickets
+ * By Users
+ *
+ * @package    local_tickets
+ * @copyright  2024 3bood_kr
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class create_ticket_form extends moodleform {
-    function definition() {
+
+    /**
+     * Form definition
+     *
+     * @return void
+     */
+    protected function definition() {
         global $CFG, $USER;
         $mform = $this->_form;
 
@@ -36,29 +55,13 @@ class create_ticket_form extends moodleform {
         $mform->setDefault('email', $USER->email);
         $mform->addRule('email', get_string('invalidemail'), 'email', null, 'client');
 
-
         $mform->addElement('text', 'mobile', get_string('mobile', 'local_tickets'));
         $mform->setType('mobile', PARAM_NOTAGS);
         $mform->addRule('mobile', get_string('invalidmobile', 'local_tickets'), 'regex', '/^\+?[1-9]{1,3} ?[0-9]{10}$/', 'client');
 
-//        $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editor_options());
-//        $mform->setType('description_editor', PARAM_RAW);
-
         $mform->addElement('textarea', 'description', get_string('description'));
         $mform->setType('description', PARAM_NOTAGS);
         $mform->addRule('description', get_string('required'), 'required', null, 'client');
-
-
         $this->add_action_buttons();
-
     }
-//    private function editor_options() {
-//        return array(
-//            'maxfiles' => EDITOR_UNLIMITED_FILES,
-//            'maxbytes' => 1024*1024*10, // e.g., 10MB; adjust as necessary
-//            'trusttext' => true,
-//            'context' => $this->context,  // depending on where you are in Moodle, you might need to provide the context
-//            'subdirs' => false
-//        );
-//    }
 }

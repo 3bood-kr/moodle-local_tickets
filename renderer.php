@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Renderer for displaying local-tickets tickets as HTML.
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,79 +24,106 @@
 
 use local_tickets\lib;
 
-defined('MOODLE_INTERNAL') || die();
-
-
-
 /**
  * The master renderer
  */
-
 class local_tickets_renderer extends plugin_renderer_base {
+    /**
+     * Configuration data loaded from the config settings.
+     *
+     * @var 
+     */
+    private $cfg;
 
-    // A local, lighly modified Mustache engine.
-    private $mustache;
-    private $CFG, $DB, $USER, $context;
+    /**
+     * Database connection instance, used for database operations.
+     *
+     * @var \moodle_database
+     */
+    private $db;
+
+    /**
+     * Current user object containing user-specific data.
+     *
+     * @var \stdClass
+     */
+    private $user;
+
+    /**
+     * User Capabilities.
+     *
+     * @var bool[]
+     */
     private $caps;
-    public function __construct(moodle_page $page, $target)
-    {
+
+    /**
+     * Constructor for the local_tickets_renderer class.
+     */
+    public function __construct(moodle_page $page, $target) {
         parent::__construct($page, $target);
         global $CFG, $DB, $USER;
-        $this->CFG = $CFG;
-        $this->DB = $DB;
-        $this->USER = $USER;
-        $this->context = context_system::instance();
+        $this->cfg = $CFG;
+        $this->db = $DB;
+        $this->user = $USER;
 
         lib::init();
         $this->caps = lib::$caps;
     }
 
-    public function render_index_page(){
-        $template = $this->initTemplate();
+    /**
+     * Display Index Page.
+     * @return string HTML to output.
+     */
+    public function render_index_page() {
+        $template = $this->inittemplate();
 
         $ownticketcount = lib::get_own_tickets_count();
         $template->ticketscount = $ownticketcount;
         return $this->output->render_from_template('local_tickets/index', $template);
     }
 
-    public function render_manage_page($filterform){
+    /**
+     * Display Manage Tickets Page.
+     * @return string HTML to output.
+     */
+    public function render_manage_page($filterform) {
 
-        if(!$this->caps['canmanagetickets']){
+        if (!$this->caps['canmanagetickets']) {
             return 'You are not supposed to be here bro';
         }
 
-        // check for page param
+        // Check for page param.
         $page = optional_param('page', 0, PARAM_INT);
         if ($page < 0) {
             $page = 0;
         }
         $limitfrom = ($page) * TICKETS_PAGE_SIZE;
 
-        //check for filter params
-        $params = array();
+        // Check for filter params.
+        $params = [];
         $status = optional_param('status', '', PARAM_NOTAGS);
-        $created_by = optional_param('created_by', '', PARAM_INT);
-        if(!empty($status) && in_array($status, ['open', 'closed', 'solved', 'pending'])){
+        $createdby = optional_param('created_by', '', PARAM_INT);
+        if (!empty($status) && in_array($status, ['open', 'closed', 'solved', 'pending'])) {
             $params['status'] = $status;
         }
-        if(!empty($created_by)){
-            $params['created_by'] = $created_by;
+        if (!empty($createdby)) {
+            $params['created_by'] = $createdby;
         }
 
-        // get tickets with params if params exist.
+        // Get tickets with params if params exist.
         $tickets = lib::get_tickets($limitfrom, $params);
         $tickets = lib::shortenticketscontent($tickets);
 
-        $template = $this->initTemplate();
+        $template = $this->inittemplate();
 
-        // send filtering form to template
+        // Send filtering form to template.
         $template->filterform = $filterform->render();
-        if(!empty($tickets)){
-            //send data to template
+        if (!empty($tickets)) {
+            // Send data to template.
             $template->hastickets = true;
             $template->tickets = $tickets;
 
-            // send pagination to template
+            // Send pagination to template.
             $totalcount = lib::get_tickets_count($params);
             $template->ticketscount = $totalcount;
             if ($totalcount > TICKETS_PAGE_SIZE) {
@@ -102,54 +131,53 @@ class local_tickets_renderer extends plugin_renderer_base {
                 $template->pager = $this->output->paging_bar($totalcount, $page , TICKETS_PAGE_SIZE, $pagedurl, 'page');
             }
         }
-
         return $this->output->render_from_template('local_tickets/manage', $template);
     }
 
-    public function render_viewticket_page($ticketid, $ticketstatusform, $commentform){
+    /**
+     * Display View Ticket Page.
+     * @return string HTML to output.
+     */
+    public function render_viewticket_page($ticketid, $ticketstatusform, $commentform) {
         $action = optional_param('action', '', PARAM_NOTAGS);
-
-        if($action == 'delete'){
-            if(lib::delete_ticket($ticketid)){
-                redirect(new moodle_url($this->CFG->wwwroot . '/local/tickets/manage.php'), 'removed successfully');
+        if ($action == 'delete') {
+            if (lib::delete_ticket($ticketid)) {
+                redirect(new moodle_url($this->cfg->wwwroot . '/local/tickets/manage.php'), 'removed successfully');
             }
         }
-
-
         $ticket = lib::get_ticket($ticketid);
-        if(!$ticket){
+        if (!$ticket) {
             return 'nah';
         }
         $canviewthisticket =
-            $this->caps['canmanagetickets'] || $this->USER->id == $ticket->created_by;
-        if(!$canviewthisticket){
+            $this->caps['canmanagetickets'] || $this->user->id == $ticket->created_by;
+        if (!$canviewthisticket) {
             return "You Can't View This Ticket bro";
         }
 
         $userfields = 'id,firstname,lastname,username,picture,imagealt';
         $owner = \core_user::get_user($ticket->created_by, $userfields, MUST_EXIST);
-        $updated_by = \core_user::get_user($ticket->updated_by, $userfields, MUST_EXIST);
+        $updatedby = \core_user::get_user($ticket->updated_by, $userfields, MUST_EXIST);
 
-        $template = $this->initTemplate();
+        $template = $this->inittemplate();
 
         $template->ticket = $ticket;
-        $template->updated_by_profile_img = $this->output->user_picture($updated_by);
-        $template->updated_by_name = fullname($updated_by);
+        $template->updated_by_profile_img = $this->output->user_picture($updatedby);
+        $template->updated_by_name = fullname($updatedby);
 
         $template->owner_profile_img = $this->output->user_picture($owner);
         $template->owner_name = fullname($owner);
 
-        // setting the default value for status to the one from the db record
-        if($this->caps['canedittickets']){
+        // Setting the default value for status to the one from the db record.
+        if ($this->caps['canedittickets']) {
             $ticketstatusform->set_data(['status' => $ticket->status]);
             $template->statusform = $ticketstatusform->render();
         }
 
-        //
         $canpostcomments = lib::canpostcomment($ticketid);
-        if($canpostcomments){
+        if ($canpostcomments) {
             $template->commentform = $commentform->render();
-            if($ticket->status == 'closed'){
+            if ($ticket->status == 'closed') {
                 $template->commentformmessage = true;
             }
         }
@@ -160,33 +188,44 @@ class local_tickets_renderer extends plugin_renderer_base {
         return $this->output->render_from_template('local_tickets/viewticket', $template);
     }
 
-    public function render_submit_ticket_page($submitticketform){
-        $template = $this->initTemplate();
+    /**
+     * Display Submit Ticket Page.
+     * @return string HTML to output.
+     */
+    public function render_submit_ticket_page($submitticketform) {
+        $template = $this->inittemplate();
 
-        if($this->caps['cansubmittickets']){
+        if ($this->caps['cansubmittickets']) {
             $template->submitticketform = $submitticketform->render();
         }
         return $this->output->render_from_template('local_tickets/submit', $template);
     }
 
-    public function render_mytickets_page(){
+    /**
+     * Display My Tickets Page.
+     * @return string HTML to output.
+     */
+    public function render_mytickets_page() {
         $tickets = lib::get_own_tickets();
 
-        $template = $this->initTemplate();
+        $template = $this->inittemplate();
         $template->mytickets = $tickets;
         $template->ticketscount = count($tickets);
 
         return $this->output->render_from_template('local_tickets/mytickets', $template);
     }
 
-    private function initTemplate(){
+    /**
+     * Initialize Submit Ticket Page.
+     * @return stdClass
+     */
+    private function inittemplate() {
         $template = new stdClass();
-        foreach ($this->caps as $key => $cap){
-            if($cap){
+        foreach ($this->caps as $key => $cap) {
+            if ($cap) {
                 $template->$key = true;
             }
         }
         return $template;
     }
-
 }

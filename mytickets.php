@@ -15,6 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * My Tickets Page
+ * Contains Tickets
+ * of Current Authorized User
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,7 +26,6 @@
 
 
 require_once(__DIR__ . '/../../config.php');
-require_login();
 
 $PAGE->set_url(new moodle_url('/local/tickets/manage.php'));
 $PAGE->set_context(context_system::instance());

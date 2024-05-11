@@ -15,6 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Index Page of
+ * local tickets plugin
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,6 +32,14 @@ $PAGE->set_title('Manage Tickets');
 $renderer = $PAGE->get_renderer('local_tickets');
 
 echo $OUTPUT->header();
+
+echo html_writer::div(html_writer::link('#', 'Open form', ['data-action' => 'opensubmitform']));
+
+$PAGE->requires->js_call_amd(
+    'local_tickets/modalforms',
+    'submitTicketForm',
+    ['[data-action=opensubmitform]', \local_modalformexamples\testform::class]
+);
 
 echo $renderer->render_index_page();
 
