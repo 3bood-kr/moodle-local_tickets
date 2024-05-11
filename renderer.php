@@ -139,12 +139,6 @@ class local_tickets_renderer extends plugin_renderer_base {
      * @return string HTML to output.
      */
     public function render_viewticket_page($ticketid, $ticketstatusform, $commentform) {
-        $action = optional_param('action', '', PARAM_NOTAGS);
-        if ($action == 'delete') {
-            if (lib::delete_ticket($ticketid)) {
-                redirect(new moodle_url($this->cfg->wwwroot . '/local/tickets/manage.php'), 'removed successfully');
-            }
-        }
         $ticket = lib::get_ticket($ticketid);
         if (!$ticket) {
             return 'nah';
