@@ -66,12 +66,15 @@
  $string['send_email_on_comments_add_desc'] = 'Send Email to Ticket Owner When the comments are added to their ticket.';
  $string['send_email_on_status_change'] = 'Status Change';
  $string['send_email_on_status_change_desc'] = 'Send Email to Ticket Owner When the status of a ticket changes.';
+ $string['show_widget'] = 'Show Widget';
+ $string['show_widget_desc'] = 'Show fixed widget wutton on bottom left of screen.';
  $string['solved'] = 'Solved';
  $string['status'] = 'Status';
  $string['strictworkflow_help'] = '
  When enabled, each specific internal role in tracker (reporter, developer, resolvers, manager) will only have access to his
  accessible states against his role.
  ';
+ $string['submit_ticket'] = 'Submit Ticket';
  $string['ticket_id'] = 'Ticket ID';
  $string['title'] = 'Title';
  $string['view_my_tickets'] = 'View My Tickets';

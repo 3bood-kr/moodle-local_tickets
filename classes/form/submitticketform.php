@@ -21,9 +21,9 @@
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_tickets\form;
+require_once(__DIR__ . '/../../../../config.php');
 
-defined('MOODLE_INTERNAL') || die;
-require_once($CFG->libdir . "/formslib.php");
 
 /**
  * Form to Submit Tickets
@@ -35,14 +35,50 @@ require_once($CFG->libdir . "/formslib.php");
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class create_ticket_form extends moodleform {
+class submitticketform extends \core_form\dynamic_form {
+    
+    protected function get_context_for_dynamic_submission(): \context {
+        return \context_system::instance();
+    }
+
+    protected function check_access_for_dynamic_submission(): void {
+           require_capability('local/tickets:submittickets', \context_system::instance());
+    }
+
+    protected function get_options(): array {
+        $rv = [];
+        if (!empty($this->_ajaxformdata['option']) && is_array($this->_ajaxformdata['option'])) {
+            foreach (array_values($this->_ajaxformdata['option']) as $idx => $option) {
+                $rv["option[$idx]"] = clean_param($option, PARAM_CLEANHTML);
+            }
+        }
+        return $rv;
+    }
+
+    public function set_data_for_dynamic_submission(): void {
+        $this->set_data([
+            'hidebuttons' => $this->optional_param('hidebuttons', false, PARAM_BOOL),
+        ] + $this->get_options());
+    }
+
+    public function process_dynamic_submission() {
+        if ($this->get_data()->name === 'error') {
+            // For testing exceptions.
+            throw new \coding_exception('Name is error');
+        }
+        return $this->get_data();
+    }
+
+    protected function get_page_url_for_dynamic_submission(): \moodle_url {
+        return new \moodle_url('/local/tickets');
+    }
 
     /**
      * Form definition
      *
      * @return void
      */
-    protected function definition() {
+    public function definition() {
         global $CFG, $USER;
         $mform = $this->_form;
 
@@ -62,6 +98,10 @@ class create_ticket_form extends moodleform {
         $mform->addElement('textarea', 'description', get_string('description'));
         $mform->setType('description', PARAM_NOTAGS);
         $mform->addRule('description', get_string('required'), 'required', null, 'client');
-        $this->add_action_buttons();
+
+        
+        if (empty($this->_ajaxformdata['hidebuttons'])) {
+            $this->add_action_buttons();
+        }
     }
 }

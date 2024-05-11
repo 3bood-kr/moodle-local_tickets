@@ -28,31 +28,38 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_tickets', get_string('pluginname', 'local_tickets'));
 
     $settings->add(new admin_setting_configcheckbox(
-        'local_tickets/requirelogin',
-        get_string('require_login', 'local_tikcets'),
-        get_string('require_login_desc', 'local_tickets'),
+        'local_tickets/showwidget',
+        get_string('show_widget', 'local_tickets'),
+        get_string('show_widget_desc', 'local_tickets'),
         '1'
     ));
 
-    $settings->add(new admin_setting_heading(
-        'local_yourplugin/emailnotifications',
-        get_string('emailnotifications', 'local_tickets'),
-        ''
-    ));
+    // $settings->add(new admin_setting_configcheckbox(
+    //     'local_tickets/requirelogin',
+    //     get_string('require_login', 'local_tikcets'),
+    //     get_string('require_login_desc', 'local_tickets'),
+    //     '1'
+    // ));
 
-    $settings->add(new admin_setting_configcheckbox(
-        'local_tickets/sendemailonstatuschange',
-        get_string('send_email_on_status_change', 'local_tikcets'),
-        get_string('send_email_on_status_change_desc', 'local_tickets'),
-        '1'
-    ));
+    // $settings->add(new admin_setting_heading(
+    //     'local_yourplugin/emailnotifications',
+    //     get_string('emailnotifications', 'local_tickets'),
+    //     ''
+    // ));
 
-    $settings->add(new admin_setting_configcheckbox(
-        'local_tickets/sendemailoncommentsadd',
-        get_string('send_email_on_comments_add', 'local_tikcets'),
-        get_string('send_email_on_comments_add_desc', 'local_tickets'),
-        '1'
-    ));
+    // $settings->add(new admin_setting_configcheckbox(
+    //     'local_tickets/sendemailonstatuschange',
+    //     get_string('send_email_on_status_change', 'local_tikcets'),
+    //     get_string('send_email_on_status_change_desc', 'local_tickets'),
+    //     '1'
+    // ));
+
+    // $settings->add(new admin_setting_configcheckbox(
+    //     'local_tickets/sendemailoncommentsadd',
+    //     get_string('send_email_on_comments_add', 'local_tikcets'),
+    //     get_string('send_email_on_comments_add_desc', 'local_tickets'),
+    //     '1'
+    // ));
 
     $ADMIN->add('localplugins', $settings);
 }

@@ -22,9 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_tickets\form\submitticketform;
 use local_tickets\lib;
+
+
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/local/tickets/classes/form/create_ticket.php');
+require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
 
 require_login();
 
@@ -34,7 +37,7 @@ $PAGE->set_title('Submit a ticket');
 
 $renderer = $PAGE->get_renderer('local_tickets');
 
-$mform = new create_ticket_form();
+$mform = new submitticketform();
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/tickets/index.php');
