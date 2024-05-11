@@ -15,15 +15,15 @@ class local_tickets_external extends external_api {
      */
     public static function submit_ticket_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'data' => new external_value(PARAM_TEXT, 'The ticket data in JSON format')
-            )
+            ]
         );
     }
 
 
     /**
-     * Returns welcome message
+     * Submits a ticket
      * @return bool true on success
      */
     public static function submit_ticket($data)
@@ -61,7 +61,6 @@ class local_tickets_external extends external_api {
             'message' => 'Error Occured. Ticket not Submitted.',
         ];
     }
-
     /**
     * Returns description of method result value
     * @return external_description
@@ -73,6 +72,41 @@ class local_tickets_external extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'A message related to the result'),
             )
         );
+    }
+
+    /**
+     * Changes status of a ticket
+     * @return bool true on success
+     */
+    public static function change_ticket_status($data)
+    {
+        if (!has_capability('local/tickets:edittickets', context_system::instance())) {
+            return [
+                'status' => 403,
+                'message' => 'Forbidden',
+            ];;
+        }
+
+        $data = json_decode($data);
+        
+        global $DB, $USER;
+        $record = new stdClass();
+        $record->id = $data->id;
+        $record->status = $data->status;
+        $record->updated_at = time();
+        $record->updated_by = $USER->id;
+        $success = $DB->update_record('local_tickets', $record);
+        if($success){
+            return [
+                'status' => 200,
+                'message' => 'Ticket submitted successfully',
+            ];
+        }
+        
+        return [
+            'status' => 400,
+            'message' => 'Error Occured. Ticket status not updated.',
+        ];
     }
 
 }

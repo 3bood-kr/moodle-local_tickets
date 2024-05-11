@@ -12,7 +12,7 @@ export const init = () => {
                 'No', // Cancel.
                 () => {
                     window.location.href = element.href
-                }
+                },
             );  
         });
     });

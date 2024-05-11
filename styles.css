@@ -60,6 +60,9 @@ ul.ticket-comment-section li:not(:last-of-type){
 }
 
 button.tickets-widget{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     left: 20px;
     bottom: 20px;
@@ -67,5 +70,5 @@ button.tickets-widget{
     height: 50px;
     border-radius: 50%;
     border: none;
-    background-color: red;
+    background-color: #2d2d30;
 }

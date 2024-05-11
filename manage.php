@@ -54,6 +54,15 @@ if ($action == 'delete') {
     }
 }
 
+$PAGE->requires->js_call_amd(
+    'local_tickets/modalforms',
+    'changeStatusModalForms',
+    ['[data-action=openchangestatusform]',
+    \local_tickets\form\changeticketstatusform::class,
+    'local_tickets_change_ticket_status',
+    'CHANGE TIKCET STATUS',
+    ['hidebuttons' => 1]],
+);
 
 $renderer = $PAGE->get_renderer('local_tickets');
 

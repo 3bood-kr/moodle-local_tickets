@@ -26,7 +26,7 @@
  * Add ticket widget to footer.
  */
 function local_tickets_before_footer() {
-    global $PAGE, $USER;
+    global $PAGE, $USER, $OUTPUT;
     if (!get_config('local_tickets', 'showwidget')) {
         return;
     }
@@ -39,7 +39,7 @@ function local_tickets_before_footer() {
     $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin']; // Removed: 'maintenance', 'report'.
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
 
-        echo "<button class='tickets-widget' data-action='opensubmitticketform'>?</button>";
+        echo $OUTPUT->render_from_template('local_tickets/widget', \context_system::instance());
         
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',

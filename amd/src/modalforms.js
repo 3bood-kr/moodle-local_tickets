@@ -41,3 +41,45 @@ export const modalForm = (linkSelector, formClass, methodName, title, args = {hi
     });
 
 };
+
+export const changeStatusModalForms = (linkSelector, formClass, methodName, title, args = {hidebuttons: 1, ...args}) => {
+    const elements = document.querySelectorAll(linkSelector);
+    // Attach a click event listener to each element.
+    elements.forEach(element => {
+        element.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ticketId = element.dataset.ticketId;
+            console.log(ticketId);
+            const form = new ModalForm({
+                formClass,
+                args: args,
+                modalConfig: {title: 'Edit Status'},
+                returnFocus: e.currentTarget
+            });
+
+            form.addEventListener(form.events.FORM_SUBMITTED, (e) => {
+                const formData = JSON.stringify(e.detail);
+                ajaxCall([{
+                    methodname: methodName,
+                    args: {data: formData},
+                    done: function(response) {
+                        const type = response?.status === 200 ? 'success' : 'danger';
+                        addNotification(response.message, type);
+                    },
+                    fail: function(ex) {
+                        console.log(ex);
+                        addNotification(`Failed to submit the form: ${ex.message}`, 'danger');
+                    }
+                }]);
+            });
+
+            // Handle other form events
+            form.addEventListener(form.events.ERROR, (e) => {
+                addNotification('Oopsie - ' + e.detail.message);
+            });
+
+            // Show the form
+            form.show();
+        });
+    });
+};

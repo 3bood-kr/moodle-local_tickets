@@ -22,11 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+use local_tickets\form\changeticketstatusform;
 use local_tickets\lib;
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/local/tickets/classes/form/change_ticket_status.php');
+
+require_once($CFG->dirroot . '/local/tickets/classes/form/changeticketstatusform.php');
+
 require_once($CFG->dirroot . '/local/tickets/classes/form/comments.php');
 require_login();
 
@@ -36,13 +38,14 @@ $PAGE->set_title('View Ticket');
 $renderer = $PAGE->get_renderer('local_tickets');
 $ticketid = required_param('id', PARAM_INT);
 
-$statusform = new change_ticket_status();
+$statusform = new changeticketstatusform();
 $commentform = new comments();
 
 if ($statusform->is_cancelled()) {
     redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'));
 }
 if ($statusform->is_submitted() && $formdata = $statusform->get_data()) {
+    lib::init();
     if (lib::changeticketstatus($formdata)) {
         redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'), 'Status Changed Successfully');
     }

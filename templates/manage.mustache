@@ -45,7 +45,9 @@
                                 <td>{{id}}</td>
                                 <td>{{title}}</td>
                                 <td>{{description}}</td>
-                                <td class="status-{{status}}">{{status}}</td>
+                                <td class="status-{{status}}">
+                                    <a href="#" class="text-reset text-decoration-none" data-action="openchangestatusform" data-ticket-id="{{id}}">{{status}}</a>
+                                </td>
                                 <td>{{created_at}}</td>
                                 <td>
                                     <a href="{{config.wwwroot}}/local/tickets/view.php?id={{id}}" type="button" class="p-2">
