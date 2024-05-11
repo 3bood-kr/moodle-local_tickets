@@ -54,7 +54,6 @@ if ($action == 'delete') {
     }
 }
 
-lib::seed();
 
 $renderer = $PAGE->get_renderer('local_tickets');
 
