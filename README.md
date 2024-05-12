@@ -1,14 +1,14 @@
 ## Overview
-This simple moodle plugin allows users to submit support tickets to communicate their issues and receive assistance from administrators.
+This Moodle plugin provides a ticketing system that allows users to easily submit support tickets to share their concerns and get help from administrators.
 
 ## Features
-- **Ticket Submission**: Users can submit tickets to express their needs or report issues.
-- **View Tickets**: Users can view all tickets they've submitted along with their current statuses.
-- **Comments**: Users can comment on their own tickets, while admins can comment on any ticket.
-- **Management**: Administrators can view all submitted tickets and change their statuses to Open, Pending, Closed, or Solved.
+- **Widget Feature**: Tickets can be submitted from any page via a modal form.
+- **Comments**: Users and administrators can add comments on tickets.
+- **Management**: Administrators can update ticket statuses to Open, Pending, Closed, or Solved.
 
-## Requirements
-- Moodle 4.1.3 (Build: 20230424)
+## Compatibility
+
+- **Moodle Version**: This plugin was created using Moodle 4.1.3 (Build: 20230424) and it works great there. If you try it on other versions and it works, please let me know!
 
 
 ## Installation
@@ -31,7 +31,14 @@ This simple moodle plugin allows users to submit support tickets to communicate 
 
 ## Contributing
 
-Any contributions for this plugin are welcome. If you would like to contribute, please fork the repository and submit a pull request.
+Any contributions for this plugin are welcome. If you would like to contribute, here are a few tasks you might consider:
+- [ ] **Add Pagination for Comments in View Ticket Page** 
+- [ ] **Add Pagination for My Tickets Page** 
+- [ ] **Create Events for logging**
+- [ ] **Soft Deletes**
+- [ ] **Automatic Ticket Closing**
+- [ ] **Send Email Notifications**
+- [ ] **PHPdoc and Code checker**
 
 ## Authors
 
@@ -39,6 +46,4 @@ Any contributions for this plugin are welcome. If you would like to contribute, 
 
 ## License
 
-This plugin is released under the [GNU General Public License](http://www.gnu.org/copyleft/gpl.html).
-
-
+Feel free to use and modify this plugin. It's under the GNU General Public License, which means it's free for everyone!
