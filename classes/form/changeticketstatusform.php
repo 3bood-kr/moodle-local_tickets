@@ -45,24 +45,36 @@ class changeticketstatusform extends \core_form\dynamic_form {
     }
 
     protected function check_access_for_dynamic_submission(): void {
-        //    require_capability('local/tickets:edittickets', \context_system::instance());
+        require_capability('local/tickets:edittickets', \context_system::instance());
     }
 
     public function set_data_for_dynamic_submission(): void {
-        $id = $this->_ajaxformdata['ticketid'];
+        // Ticket id.
+        $id = $this->_ajaxformdata['id'];
         lib::init();
         $ticketStatus = lib::get_ticket($id)->status;
+        // Set Default data for dynamic form.
         $this->set_data([
-            'hidebuttons' => $this->optional_param('hidebuttons', false, PARAM_BOOL),
+            'hidebuttons' => $this->optional_param('hidebuttons', true, PARAM_BOOL),
             'id' => $id,
             'status' => $ticketStatus,
         ]);
     }
 
     public function process_dynamic_submission() {
-        // var_dump(json_encode($this->get_data()));
-        echo $this->get_data();
-        return $this->get_data();
+        $formdata = $this->get_data();
+        lib::init();
+        $success = lib::changeticketstatus($formdata);
+        if($success){
+            return [
+                'status' => 200,
+                'message' => get_string('status_change_success', 'local_tickets'),
+            ];
+        }
+        return [
+            'status' => 500,
+            'message' => get_string('status_change_fail', 'local_tickets'),
+        ];
     }
 
     protected function get_page_url_for_dynamic_submission(): \moodle_url {
@@ -102,8 +114,7 @@ class changeticketstatusform extends \core_form\dynamic_form {
         
         $mform->addElement('hidden', 'hidebuttons');
         $mform->setType('hidebuttons', PARAM_BOOL);
-
-        if (empty($this->_ajaxformdata['hidebuttons'])) {
+        if (!$this->_ajaxformdata['hidebuttons']) {
             $this->add_action_buttons();
         }
     }

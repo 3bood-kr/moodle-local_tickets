@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_tickets\form;
+
+use local_tickets\lib;
+
 require_once(__DIR__ . '/../../../../config.php');
 
 
@@ -52,7 +55,19 @@ class submitticketform extends \core_form\dynamic_form {
     }
 
     public function process_dynamic_submission() {
-        return $this->get_data();
+        $formdata = $this->get_data();
+        lib::init();
+        $success = lib::submit_ticket($formdata);
+        if($success){
+            return [
+                'status' => 200,
+                'message' => get_string('ticket_submission_success', 'local_tickets'),
+            ];
+        }
+        return [
+            'status' => 500,
+            'message' => get_string('ticket_submission_fail', 'local_tickets'),
+        ];
     }
 
     protected function get_page_url_for_dynamic_submission(): \moodle_url {

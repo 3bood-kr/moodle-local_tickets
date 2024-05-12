@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2024051100;
+$plugin->version  = 2024051200;
 $plugin->requires = 2014051200;
 $plugin->component = 'local_tickets';
 $plugin->release = '1.0';

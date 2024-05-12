@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_tickets\lib;
+
 /**
  * Add ticket widget to footer.
  */
@@ -31,7 +33,7 @@ function local_tickets_before_footer() {
         return;
     }
     // Show widget for logged in users only.
-    if ($USER->id == 1 || !isset($USER->id)){
+    if ($USER->id == 0 ||$USER->id == 1) {
         return;
     }
 
@@ -46,7 +48,6 @@ function local_tickets_before_footer() {
             'modalForm',
             ['[data-action=opensubmitticketform]',
             \local_tickets\form\submitticketform::class,
-            'local_tickets_submit_ticket',
             get_string('submit_ticket', 'local_tickets'),
             ['hidebuttons' => 1]],
         );

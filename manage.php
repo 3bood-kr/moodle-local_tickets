@@ -59,9 +59,12 @@ $PAGE->requires->js_call_amd(
     'changeStatusModalForms',
     ['[data-action=openchangestatusform]',
     \local_tickets\form\changeticketstatusform::class,
-    'local_tickets_change_ticket_status',
-    'CHANGE TIKCET STATUS',
     ['hidebuttons' => 1]],
+);
+
+$PAGE->requires->js_call_amd(
+    'local_tickets/filterform',
+    'init',
 );
 
 $renderer = $PAGE->get_renderer('local_tickets');

@@ -1,14 +1,11 @@
 import ModalForm from 'core_form/modalform';
 import {add as addToast} from 'core/toast';
-import {call as ajaxCall} from 'core/ajax';
 
 const addNotification = (msg, type) => {
     addToast(msg, {type: type});
-    // eslint-disable-next-line no-console
-    console.log(msg);
 };
 
-export const modalForm = (linkSelector, formClass, methodName, title, args = {hidebuttons: 1, ...args}) => {
+export const modalForm = (linkSelector, formClass, title, args = {...args, hidebuttons: args.hidebuttons ?? 1}) => {
     document.querySelector(linkSelector).addEventListener('click', (e) => {
         e.preventDefault();
         const form = new ModalForm({
@@ -17,68 +14,46 @@ export const modalForm = (linkSelector, formClass, methodName, title, args = {hi
             modalConfig: {title: title},
             returnFocus: e.currentTarget
         });
-        
         form.addEventListener(form.events.FORM_SUBMITTED, (e) => {
-            const formData = JSON.stringify(e.detail);
-            ajaxCall([{
-                methodname: methodName, 
-                args: {data: formData},
-                done: function(response) {
-                    const type = response?.status === 200 ? 'success' : 'danger';
-                    addNotification(response.message, type);
-                },
-                fail: function(ex) {
-                    console.log(ex);
-                    addNotification(`Failed to submit the form: ${ex.message}`, 'danger');
-                }
-            }]);
-
+            // Comes from process_dynamic_submission() in submitticketform.php
+            const response = e.detail;
+            const type = response.status == 200 ? 'success' : 'danger';
+            addNotification(response.message, type);
         });
-
-        // Demo of different events.
         form.addEventListener(form.events.ERROR, (e) => addNotification('Oopsie - ' + e.detail.message));
         form.show();
     });
 
 };
 
-export const changeStatusModalForms = (linkSelector, formClass, methodName, title, args = {hidebuttons: 1, ...args}) => {
+export const changeStatusModalForms = (linkSelector, formClass, args = {...args, hidebuttons: args.hidebuttons ?? 1}) => {
     const elements = document.querySelectorAll(linkSelector);
     // Attach a click event listener to each element.
     elements.forEach(element => {
         element.addEventListener('click', (e) => {
             e.preventDefault();
             const ticketId = element.dataset.ticketId;
-            console.log(ticketId);
             const form = new ModalForm({
                 formClass,
-                args: args,
+                args: {...args, id: ticketId},
                 modalConfig: {title: 'Edit Status'},
                 returnFocus: e.currentTarget
             });
-
             form.addEventListener(form.events.FORM_SUBMITTED, (e) => {
-                const formData = JSON.stringify(e.detail);
-                ajaxCall([{
-                    methodname: methodName,
-                    args: {data: formData},
-                    done: function(response) {
-                        const type = response?.status === 200 ? 'success' : 'danger';
-                        addNotification(response.message, type);
-                    },
-                    fail: function(ex) {
-                        console.log(ex);
-                        addNotification(`Failed to submit the form: ${ex.message}`, 'danger');
-                    }
-                }]);
-            });
+                const response = e.detail;
+                let type;
+                if(response.status == 200){
+                    type = 'success';
+                    location.reload();
+                } else {
+                    type = 'danger';
+                }
+                addNotification(response.message, type);
 
-            // Handle other form events
+            });
             form.addEventListener(form.events.ERROR, (e) => {
                 addNotification('Oopsie - ' + e.detail.message);
             });
-
-            // Show the form
             form.show();
         });
     });
