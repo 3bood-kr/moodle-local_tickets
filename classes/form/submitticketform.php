@@ -39,26 +39,51 @@ require_once(__DIR__ . '/../../../../config.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class submitticketform extends \core_form\dynamic_form {
-    
+
+    /**
+     * Returns form context
+     *
+     * If context depends on the form data, it is available in $this->_ajaxformdata or
+     * by calling $this->optional_param()
+     *
+     * @return \context
+     */
     protected function get_context_for_dynamic_submission(): \context {
         return \context_system::instance();
     }
 
+    /**
+     * Check if current user has access to this form, otherwise throw exception
+     *
+     */
     protected function check_access_for_dynamic_submission(): void {
            require_capability('local/tickets:submittickets', \context_system::instance());
     }
 
+    /**
+     * Load in existing data as form defaults
+     *
+     */
     public function set_data_for_dynamic_submission(): void {
         $this->set_data([
             'hidebuttons' => $this->optional_param('hidebuttons', false, PARAM_BOOL),
         ]);
     }
 
+    /**
+     * Process the form submission, used if form was submitted via AJAX
+     *
+     * This method can return scalar values or arrays that can be json-encoded, they will be passed to the caller JS.
+     *
+     * Submission data can be accessed as: $this->get_data()
+     *
+     * @return ['status' => int, 'message'=> string]
+     */
     public function process_dynamic_submission() {
         $formdata = $this->get_data();
         lib::init();
         $success = lib::submit_ticket($formdata);
-        if($success){
+        if ($success) {
             return [
                 'status' => 200,
                 'message' => get_string('ticket_submission_success', 'local_tickets'),
@@ -70,6 +95,13 @@ class submitticketform extends \core_form\dynamic_form {
         ];
     }
 
+    /**
+     * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
+     *
+     * This is used in the form elements sensitive to the page url, such as Atto autosave in 'editor'
+     *
+     * @return \moodle_url
+     */
     protected function get_page_url_for_dynamic_submission(): \moodle_url {
         return new \moodle_url('/local/tickets');
     }
@@ -100,7 +132,6 @@ class submitticketform extends \core_form\dynamic_form {
         $mform->setType('description', PARAM_NOTAGS);
         $mform->addRule('description', get_string('required'), 'required', null, 'client');
 
-        
         if (empty($this->_ajaxformdata['hidebuttons'])) {
             $this->add_action_buttons();
         }

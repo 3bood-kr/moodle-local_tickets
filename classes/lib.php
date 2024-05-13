@@ -360,14 +360,4 @@ class lib {
         }
         return true;
     }
-
-    public static function seed(){
-        //Seed the database with some data to
-        for($i=0; $i < 15; $i++){
-            $formdata = new stdClass;
-            $formdata->title = 'Ticket ' . $i;
-            $formdata->description = "HELLOOOO";
-            self::submit_ticket($formdata);
-        }
-    }
 }

@@ -31,7 +31,7 @@ class local_tickets_renderer extends plugin_renderer_base {
     /**
      * Configuration data loaded from the config settings.
      *
-     * @var 
+     * @var \stdClass
      */
     private $cfg;
 

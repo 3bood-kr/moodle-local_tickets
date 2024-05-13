@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
- * 
+ *
+ *
  * @package    local_tickets
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,12 +37,11 @@ function local_tickets_before_footer() {
         return;
     }
 
-
-    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin']; // Removed: 'maintenance', 'report'.
+    // Removed: 'maintenance', 'report'.
+    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
 
         echo $OUTPUT->render_from_template('local_tickets/widget', \context_system::instance());
-        
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',
             'modalForm',

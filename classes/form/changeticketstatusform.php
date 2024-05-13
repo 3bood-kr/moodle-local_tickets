@@ -39,33 +39,57 @@ use local_tickets\lib;
  */
 class changeticketstatusform extends \core_form\dynamic_form {
 
-
+    /**
+     * Returns form context
+     *
+     * If context depends on the form data, it is available in $this->_ajaxformdata or
+     * by calling $this->optional_param()
+     *
+     * @return \context
+     */
     protected function get_context_for_dynamic_submission(): \context {
         return \context_system::instance();
     }
 
+    /**
+     * Check if current user has access to this form, otherwise throw exception
+     *
+     */
     protected function check_access_for_dynamic_submission(): void {
         require_capability('local/tickets:edittickets', \context_system::instance());
     }
 
+    /**
+     * Load in existing data as form defaults
+     *
+     */
     public function set_data_for_dynamic_submission(): void {
         // Ticket id.
         $id = $this->_ajaxformdata['id'];
         lib::init();
-        $ticketStatus = lib::get_ticket($id)->status;
+        $ticketstatus = lib::get_ticket($id)->status;
         // Set Default data for dynamic form.
         $this->set_data([
             'hidebuttons' => $this->optional_param('hidebuttons', true, PARAM_BOOL),
             'id' => $id,
-            'status' => $ticketStatus,
+            'status' => $ticketstatus,
         ]);
     }
 
+    /**
+     * Process the form submission, used if form was submitted via AJAX
+     *
+     * This method can return scalar values or arrays that can be json-encoded, they will be passed to the caller JS.
+     *
+     * Submission data can be accessed as: $this->get_data()
+     *
+     * @return ['status' => int, 'message'=> string]
+     */
     public function process_dynamic_submission() {
         $formdata = $this->get_data();
         lib::init();
         $success = lib::changeticketstatus($formdata);
-        if($success){
+        if ($success) {
             return [
                 'status' => 200,
                 'message' => get_string('status_change_success', 'local_tickets'),
@@ -77,6 +101,13 @@ class changeticketstatusform extends \core_form\dynamic_form {
         ];
     }
 
+    /**
+     * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
+     *
+     * This is used in the form elements sensitive to the page url, such as Atto autosave in 'editor'
+     *
+     * @return \moodle_url
+     */
     protected function get_page_url_for_dynamic_submission(): \moodle_url {
         return new \moodle_url('/local/tickets');
     }
@@ -106,12 +137,11 @@ class changeticketstatusform extends \core_form\dynamic_form {
         // Hidden element for the ticket set in set_data_for_dynamic_submission().
         $mform->addElement('hidden', 'id', '');
         $mform->setType('id', PARAM_INT);
-        if($PAGE->url->get_path() == '/moodle/local/tickets/view.php'){
+        if ($PAGE->url->get_path() == '/moodle/local/tickets/view.php') {
             $id = required_param('id', PARAM_INT);
             $mform->setDefault('id', $id);
         }
 
-        
         $mform->addElement('hidden', 'hidebuttons');
         $mform->setType('hidebuttons', PARAM_BOOL);
         if (!$this->_ajaxformdata['hidebuttons']) {
