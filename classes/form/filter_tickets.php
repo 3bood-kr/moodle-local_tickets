@@ -68,4 +68,5 @@ class filter_tickets extends moodleform {
 
         $this->add_action_buttons(false, 'Filter');
     }
+
 }

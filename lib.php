@@ -52,3 +52,38 @@ function local_tickets_before_footer() {
         );
     }
 }
+
+function local_tickets_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    global $DB;
+
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
+        return false;
+    }
+
+    require_login();
+
+    // Make sure the filearea is one of those used by local_tickets plugin.
+    if ($filearea != 'attachment') {
+        return false;
+    }
+
+    $itemid = (int)array_shift($args);
+
+
+    $fs = get_file_storage();
+
+    $filename = array_pop($args);
+    if (empty($args)) {
+        $filepath = '/';
+    } else {
+        $filepath = '/'.implode('/', $args).'/';
+    }
+
+    $file = $fs->get_file($context->id, 'local_tickets', $filearea, $itemid, $filepath, $filename);
+    if (!$file) {
+        return false;
+    }
+
+    // finally send the file
+    send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
+}

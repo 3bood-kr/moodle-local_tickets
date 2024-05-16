@@ -199,7 +199,6 @@ class lib {
         if (!self::$caps['cansubmittickets'] || !$formdata) {
             return false;
         }
-
         global $USER, $DB;
         $record = new stdClass();
         $record->title = $formdata->title;
@@ -210,11 +209,15 @@ class lib {
         $record->created_at = time();
         $record->updated_at = time();
         $record->updated_by = $USER->id;
-        $id = $DB->insert_record('local_tickets', $record, true);
-        if($id){
-            self::send_notification($id);
+        $ticketid = $DB->insert_record('local_tickets', $record, true);
+        if($ticketid){
+            // Save Files.
+            $context = context_system::instance();
+            file_save_draft_area_files($formdata->attachments, $context->id, 'local_tickets', 'attachment', $ticketid);
+            // Notify Managers that a new ticket is submitted.
+            self::send_notification($ticketid);
         }
-        return $id;
+        return $ticketid;
     }
 
     /**

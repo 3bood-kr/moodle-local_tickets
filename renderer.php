@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die;
 
 use local_tickets\lib;
 
+use function PHPSTORM_META\type;
+
 /**
  * The master renderer
  */
@@ -158,11 +160,33 @@ class local_tickets_renderer extends plugin_renderer_base {
         $template = $this->inittemplate();
 
         $template->ticket = $ticket;
+
         $template->updated_by_profile_img = $this->output->user_picture($updatedby);
         $template->updated_by_name = fullname($updatedby);
 
         $template->owner_profile_img = $this->output->user_picture($owner);
         $template->owner_name = fullname($owner);
+
+        $attachments = [];
+        $fs = get_file_storage();
+        if ($files = $fs->get_area_files(context_system::instance()->id, 'local_tickets', 'attachment', $ticketid, 'sortorder', false)) {
+            // Look through each file being managed
+            foreach ($files as $file) {
+                // Build the File URL. Long process! But extremely accurate.
+                $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+                // Check if the file is an image
+                if (strpos($file->get_mimetype(), 'image/') === 0) {
+                    // Display the image
+                    $attachments[] = "<img style='width:250px; height:auto;' src='$fileurl' />";
+                }
+                if (strpos($file->get_mimetype(), 'video/') === 0) {
+                    // Display the video
+                    $attachments[] = "<video controls style='max-width:100%;'><source src='$fileurl' type='" . $file->get_mimetype() . "'></video>";
+                }
+            }
+        }
+
+        $template->attachments = $attachments;
 
         // Setting the default value for status to the one from the db record.
         if ($this->caps['canedittickets']) {
@@ -212,7 +236,8 @@ class local_tickets_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Initialize Submit Ticket Page.
+     * Initialize mustache template
+     * with capability variables.
      * @return stdClass
      */
     private function inittemplate() {

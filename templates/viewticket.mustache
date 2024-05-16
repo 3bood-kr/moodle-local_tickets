@@ -46,6 +46,12 @@
     <p>
         {{ticket.description}}
     </p>
+
+    <div class="attachments">
+        {{#attachments}}
+            {{{.}}}
+        {{/attachments}}
+    </div>
 </div>
 
 {{#canedittickets}}
