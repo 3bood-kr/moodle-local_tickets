@@ -127,6 +127,7 @@ class submitticketform extends \core_form\dynamic_form {
         $mform->addElement('text', 'mobile', get_string('mobile', 'local_tickets'));
         $mform->setType('mobile', PARAM_NOTAGS);
         $mform->addRule('mobile', get_string('invalidmobile', 'local_tickets'), 'regex', '/^\+?[1-9]{1,3} ?[0-9]{10}$/', 'client');
+        $mform->addHelpButton('mobile', 'mobile', 'local_tickets');
 
         $mform->addElement('textarea', 'description', get_string('description'));
         $mform->setType('description', PARAM_NOTAGS);

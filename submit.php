@@ -25,11 +25,10 @@
 use local_tickets\form\submitticketform;
 use local_tickets\lib;
 
-
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
-
 require_login();
+
+require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
 
 $PAGE->set_url(new moodle_url('/local/tickets/submit.php'));
 $PAGE->set_context(context_system::instance());

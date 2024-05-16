@@ -25,6 +25,8 @@
 namespace local_tickets;
 
 use context_system;
+use context_user;
+use moodle_url;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
@@ -208,8 +210,11 @@ class lib {
         $record->created_at = time();
         $record->updated_at = time();
         $record->updated_by = $USER->id;
-        $success = $DB->insert_record('local_tickets', $record);
-        return $success;
+        $id = $DB->insert_record('local_tickets', $record, true);
+        if($id){
+            self::send_notification($id);
+        }
+        return $id;
     }
 
     /**
@@ -360,4 +365,36 @@ class lib {
         }
         return true;
     }
+
+    /**
+     * Send Notification for admin.
+     * *
+     * @return boolean.
+     */
+    public static function send_notification($id){
+
+        $capabilities = ['local/tickets:edittickets', 'local/tickets:deletetickets'];
+        $users =  get_users_by_capability(context_system::instance(), $capabilities);
+
+        $message = new \core\message\message();
+        $message->component = 'moodle';
+        $message->name = 'notices';
+        $message->courseid = SITEID;
+        $message->userfrom = \core_user::get_noreply_user();
+        $message->subject = get_string('new_ticket_submitted', 'local_tickets');
+        $message->fullmessage = get_string('new_ticket_submitted', 'local_tickets');
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = get_string('new_ticket_submitted', 'local_tickets');
+        $message->smallmessage = get_string('new_ticket_submitted', 'local_tickets');
+        $contexturl = new moodle_url('/local/tickets/view.php', ['id' => $id]);
+        $message->contexturl = $contexturl->out();
+        $message->contexturlname = 'Ticket';
+
+        foreach($users as $user){
+            $message->userto = $user;
+            message_send($message);
+        }
+
+    }
+
 }

@@ -25,13 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_tickets', get_string('pluginname', 'local_tickets'));
-
-    $settings->add(new admin_setting_configcheckbox(
-        'local_tickets/showwidget',
-        get_string('show_widget', 'local_tickets'),
-        get_string('show_widget_desc', 'local_tickets'),
-        '1'
-    ));
-    $ADMIN->add('localplugins', $settings);
+    $ADMIN->add('root',
+    new admin_externalpage('local_tickets',
+    get_string('pluginname', 'local_tickets'),
+    new moodle_url('/local/tickets/manage.php')));
 }

@@ -33,7 +33,7 @@ function local_tickets_before_footer() {
         return;
     }
     // Show widget for logged in users only.
-    if ($USER->id == 0 ||$USER->id == 1) {
+    if (!lib::is_logged_in()) {
         return;
     }
 

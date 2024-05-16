@@ -26,6 +26,7 @@ use local_tickets\form\changeticketstatusform;
 use local_tickets\lib;
 
 require_once(__DIR__ . '/../../config.php');
+require_login();
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/changeticketstatusform.php');
 
