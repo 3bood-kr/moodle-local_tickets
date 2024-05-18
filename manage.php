@@ -41,6 +41,7 @@ $PAGE->set_title('Manage Tickets');
 
 $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
 
+
 $filterform = new filter_tickets();
 
 $action = optional_param('action', '', PARAM_NOTAGS);

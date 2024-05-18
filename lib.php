@@ -29,19 +29,32 @@ use local_tickets\lib;
  */
 function local_tickets_before_footer() {
     global $PAGE, $USER, $OUTPUT;
-    if (!get_config('local_tickets', 'showwidget')) {
-        return;
-    }
+    lib::init();
     // Show widget for logged in users only.
     if (!lib::is_logged_in()) {
         return;
     }
 
     // Removed: 'maintenance', 'report'.
-    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin'];
+    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
-
-        echo $OUTPUT->render_from_template('local_tickets/widget', \context_system::instance());
+        
+        // If can manage tickets then open manage modal dialouge otherwise submit form.
+        if (lib::$caps['canmanagetickets']) {
+            $data = ['dataaction' => 'openmodaldialouge', 'title' => get_string('manage_tickets', 'local_tickets')];
+            echo $OUTPUT->render_from_template(
+                'local_tickets/widget',
+                $data,
+            );
+            $PAGE->requires->js_call_amd(
+                'local_tickets/modaldialouge',
+                'init',
+                ['[data-action=openmodaldialouge]'],
+            );
+            return;
+        }
+        $data = ['dataaction' => 'opensubmitticketform', 'title' => get_string('submit_ticket', 'local_tickets')];
+        echo $OUTPUT->render_from_template('local_tickets/widget', $data);
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',
             'modalForm',

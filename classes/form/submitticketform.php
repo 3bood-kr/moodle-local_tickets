@@ -140,7 +140,7 @@ class submitticketform extends \core_form\dynamic_form {
         $mform->addElement(
             'filemanager',
             'attachments',
-            get_string('attachment', 'moodle'),
+            get_string('attachments', 'local_tickets'),
             null,
             [
                 'subdirs' => 0,

@@ -73,6 +73,7 @@ ul.ticket-comment-section li:not(:last-of-type){
 }
 
 button.tickets-widget{
+    z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;

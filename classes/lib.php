@@ -76,7 +76,7 @@ class lib {
      *
      * @return \stdClass on success.
      */
-    public static function get_tickets($limitfrom, $conditions=null, $sort='created_at DESC') {
+    public static function get_tickets($limitfrom = null, $conditions=null, $sort='created_at DESC') {
         global $DB, $USER;
         $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, TICKETS_PAGE_SIZE));
         $tickets = self::format_tickets_date($tickets);
@@ -398,6 +398,20 @@ class lib {
             message_send($message);
         }
 
+    }
+
+    /**
+     * Check if user is logged in.
+     * *
+     * .
+     */
+    public static function index_redirect() {
+        global $USER;
+        self::init();
+        if (self::$caps['canmanagetickets']) {
+            redirect(new moodle_url('/local/tickets/manage.php'));
+        }
+        redirect(new moodle_url('/local/tickets/mytickets.php'));
     }
 
 }
