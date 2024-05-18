@@ -22,6 +22,8 @@ export const init = () => {
                         methodname: 'local_tickets_delete_ticket', 
                         args: {id: ticketId},
                         done: function(response) {
+                            console.log(ticketId);
+                            console.log(response);
                             if(response.status == 200){
                                 location.reload();
                             }
@@ -30,7 +32,8 @@ export const init = () => {
                             }
                         },
                         fail: function(ex) {
-                            addNotification(`Failed to delete ticket: ${ex.message}`, 'danger');
+                            addNotification(`Failed to delete ticket: ${ex}`, 'danger');
+                            console.log(ex);
                         }
                     }])
                 },
