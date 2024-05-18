@@ -55,12 +55,6 @@ class local_tickets_external extends external_api{
      * @return bool true on success
      */
     public static function delete_ticket($id) {
-        if (!has_capability('local/tickets:deletetickets', context_system::instance())) {
-            return [
-                'status' => 403,
-                'message' => 'Forbidden',
-            ];;
-        }
         $id = json_decode(strval($id));
         lib::init();
         $success = lib::delete_ticket($id);
@@ -95,7 +89,7 @@ class local_tickets_external extends external_api{
      */
     public static function get_tickets_parameters() {
         return new external_function_parameters(
-            []
+            ['own' => new external_value(PARAM_BOOL, 'Get all tickets or own.'), ]
         );
     }
 
@@ -105,16 +99,14 @@ class local_tickets_external extends external_api{
      * 
      * @return bool true on success
      */
-    public static function get_tickets() {
-        if (!has_capability('local/tickets:viewtickets', context_system::instance())) {
-            return [
-                'status' => 403,
-                'message' => 'Forbidden',
-                'data' => '',
-            ];;
-        }
+    public static function get_tickets($own = true) {
         lib::init();
-        $tickets = lib::get_tickets();
+        if($own){
+            $tickets = lib::get_own_tickets();
+        }else{
+            $tickets = lib::get_tickets();
+        }
+
         $tickets = json_encode($tickets);
         if ($tickets) {
             return [

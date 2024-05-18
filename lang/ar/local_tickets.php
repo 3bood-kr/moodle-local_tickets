@@ -89,3 +89,4 @@
  $string['status_change_fail'] = 'فشل في تغيير الحالة.';
  $string['new_ticket_submitted'] = 'تم تقديم تذكرة جديدة.';
  $string['filter'] = 'تصفية'; 
+ $string['my_tickets'] = 'تذاكري';

@@ -90,3 +90,4 @@ $string['status_change_success'] = 'Status Changed Successfully.';
 $string['status_change_fail'] = 'Failed to Change Status.';
 $string['new_ticket_submitted'] = 'A New Ticket Have Been Submitted.';
 $string['filter'] = 'Filter';
+$string['my_tickets'] = 'My Tickets';

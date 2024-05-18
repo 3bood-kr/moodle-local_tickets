@@ -79,10 +79,14 @@ button.tickets-widget{
     justify-content: center;
     position: fixed;
     left: 20px;
-    bottom: 20px;
+    bottom: 75px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
     border: none;
     background-color: #2d2d30;
+}
+
+button.submit-ticket-widget{
+    bottom: 20px;
 }

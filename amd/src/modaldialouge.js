@@ -8,20 +8,25 @@ const addNotification = (msg, type) => {
     addToast(msg, {type: type});
 };
 
-export const init = (linkSelector) => {
+export const init = (linkSelector, title, own = true) => {
     document.querySelector(linkSelector).addEventListener('click', (e) => {
         e.preventDefault();
         ajaxCall([{
             methodname: 'local_tickets_get_tickets', 
-            args: {},
+            args: {'own': own},
             done: async function(response) {
                 if(response.status == 200){
                     const tickets = JSON.parse(response.data);
                     const modal = await ModalFactory.create({
                         large: true,
-                        title: getString('manage_tickets', 'local_tickets'),
+                        title: title,
                         body: Templates.render('local_tickets/modaldialouge', {tickets: tickets}),
                     });
+                    
+                    require(['local_tickets/deletepopup'], function(deletepopup) {
+                        deletepopup.init();
+                    });
+
                     modal.show();
                 }
                 else{

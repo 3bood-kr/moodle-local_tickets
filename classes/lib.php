@@ -63,6 +63,7 @@ class lib {
      * @return \stdClass on success.
      */
     public static function init() {
+        global $USER;
         $context = context_system::instance();
         self::$caps['canviewtickets'] = has_capability('local/tickets:viewtickets', $context);
         self::$caps['candeletetickets'] = has_capability('local/tickets:deletetickets', $context);
@@ -78,7 +79,7 @@ class lib {
      */
     public static function get_tickets($limitfrom = null, $conditions=null, $sort='created_at DESC') {
         global $DB, $USER;
-        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, TICKETS_PAGE_SIZE));
+        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, 15));
         $tickets = self::format_tickets_date($tickets);
         return $tickets;
     }
@@ -182,10 +183,14 @@ class lib {
      * @return boolean on success.
      */
     public static function delete_ticket($ticketid) {
-        if (!self::$caps['candeletetickets'] || empty($ticketid)) {
+        if (empty($ticketid)) {
             return false;
         }
-        global $DB;
+        global $DB, $USER;
+        $ticket = $DB->get_record('local_tickets', ['id' => $ticketid], 'created_by');
+        if($USER->id != $ticket->created_by && !self::$caps['candeletetickets']){
+            return false;
+        }
         $success = $DB->delete_records('local_tickets', ['id' => $ticketid]);
         return $success;
     }

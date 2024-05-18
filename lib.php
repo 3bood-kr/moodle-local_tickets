@@ -39,22 +39,26 @@ function local_tickets_before_footer() {
     $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
         
-        // If can manage tickets then open manage modal dialouge otherwise submit form.
+        $title = get_string('my_tickets', 'local_tickets');
+        $owntickets = true;
+
         if (lib::$caps['canmanagetickets']) {
-            $data = ['dataaction' => 'openmodaldialouge', 'title' => get_string('manage_tickets', 'local_tickets')];
-            echo $OUTPUT->render_from_template(
-                'local_tickets/widget',
-                $data,
-            );
-            $PAGE->requires->js_call_amd(
-                'local_tickets/modaldialouge',
-                'init',
-                ['[data-action=openmodaldialouge]'],
-            );
-            return;
+            $title = get_string('manage_tickets', 'local_tickets');
+            // This gets all tickets for admin.
+            $owntickets = false;
         }
-        $data = ['dataaction' => 'opensubmitticketform', 'title' => get_string('submit_ticket', 'local_tickets')];
-        echo $OUTPUT->render_from_template('local_tickets/widget', $data);
+        
+        $PAGE->requires->js_call_amd(
+            'local_tickets/modaldialouge',
+            'init',
+            ['[data-action=openmodaldialouge]',
+             $title,
+             $owntickets,
+            ],
+        );
+        $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
+
+        
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',
             'modalForm',
@@ -63,6 +67,8 @@ function local_tickets_before_footer() {
             get_string('submit_ticket', 'local_tickets'),
             ['hidebuttons' => 1]],
         );
+
+        echo $OUTPUT->render_from_template('local_tickets/widget', ['title' => $title]);
     }
 }
 
