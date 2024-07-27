@@ -26,11 +26,13 @@ use local_tickets\form\changeticketstatusform;
 use local_tickets\lib;
 
 require_once(__DIR__ . '/../../config.php');
+require_login();
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/changeticketstatusform.php');
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/comments.php');
-require_login();
+
+define('COMMENTS_PAGE_SIZE', 15);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('View Ticket');
@@ -47,7 +49,7 @@ if ($statusform->is_cancelled()) {
 if ($statusform->is_submitted() && $formdata = $statusform->get_data()) {
     lib::init();
     if (lib::changeticketstatus($formdata)) {
-        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'), 'Status Changed Successfully');
+        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'));
     }
 }
 

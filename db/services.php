@@ -33,4 +33,12 @@ $functions = [
         'type'        => 'write',
         'ajax'        => true,
     ],
+    'local_tickets_get_tickets' => [
+        'classname'   => 'local_tickets_external',
+        'methodname'  => 'get_tickets',
+        'classpath'   => 'local/tickets/externallib.php',
+        'description' => 'Fetch a tickets.',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
 ];

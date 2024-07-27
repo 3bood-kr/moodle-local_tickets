@@ -1,5 +1,7 @@
 import ModalForm from 'core_form/modalform';
 import {add as addToast} from 'core/toast';
+import {get_string as getString} from 'core/str';
+
 
 const addNotification = (msg, type) => {
     addToast(msg, {type: type});
@@ -36,7 +38,7 @@ export const changeStatusModalForms = (linkSelector, formClass, args = {...args,
             const form = new ModalForm({
                 formClass,
                 args: {...args, id: ticketId},
-                modalConfig: {title: 'Edit Status'},
+                modalConfig: {title: getString('edit_status', 'local_tickets')},
                 returnFocus: e.currentTarget
             });
             form.addEventListener(form.events.FORM_SUBMITTED, (e) => {

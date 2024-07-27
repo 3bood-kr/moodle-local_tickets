@@ -73,15 +73,21 @@ ul.ticket-comment-section li:not(:last-of-type){
 }
 
 button.tickets-widget{
+    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    left: 20px;
-    bottom: 20px;
+    left: 20px !important;
+    bottom: 150px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
     border: none;
-    background-color: #2d2d30;
+    background-color: #242a6a;
+    opacity:0.7;
+}
+
+button.submit-ticket-widget{
+    bottom: 95px;
 }

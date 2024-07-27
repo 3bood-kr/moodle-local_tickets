@@ -26,6 +26,7 @@ namespace local_tickets\form;
 use local_tickets\lib;
 
 require_once(__DIR__ . '/../../../../config.php');
+require_once($CFG->libdir . '/filelib.php');
 
 
 /**
@@ -83,6 +84,7 @@ class submitticketform extends \core_form\dynamic_form {
         $formdata = $this->get_data();
         lib::init();
         $success = lib::submit_ticket($formdata);
+        
         if ($success) {
             return [
                 'status' => 200,
@@ -94,6 +96,7 @@ class submitticketform extends \core_form\dynamic_form {
             'message' => get_string('ticket_submission_fail', 'local_tickets'),
         ];
     }
+
 
     /**
      * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
@@ -127,10 +130,27 @@ class submitticketform extends \core_form\dynamic_form {
         $mform->addElement('text', 'mobile', get_string('mobile', 'local_tickets'));
         $mform->setType('mobile', PARAM_NOTAGS);
         $mform->addRule('mobile', get_string('invalidmobile', 'local_tickets'), 'regex', '/^\+?[1-9]{1,3} ?[0-9]{10}$/', 'client');
+        $mform->addHelpButton('mobile', 'mobile', 'local_tickets');
 
         $mform->addElement('textarea', 'description', get_string('description'));
         $mform->setType('description', PARAM_NOTAGS);
         $mform->addRule('description', get_string('required'), 'required', null, 'client');
+        
+        $maxbytes = 10485760; // 10MB.
+        $mform->addElement(
+            'filemanager',
+            'attachments',
+            get_string('attachments', 'local_tickets'),
+            null,
+            [
+                'subdirs' => 0,
+                'maxbytes' => $maxbytes,
+                'areamaxbytes' => 10485760,
+                'maxfiles' => 50,
+                'accepted_types' => ['.jpg', '.jpeg', '.png', '.mp4', '.mov'],
+                'return_types' => $CFG->FILE_INTERNAL | $CFG->FILE_EXTERNAL,
+            ]
+        );
 
         if (empty($this->_ajaxformdata['hidebuttons'])) {
             $this->add_action_buttons();

@@ -66,6 +66,9 @@ class filter_tickets extends moodleform {
         $mform->setDefault('created_by', $createdby);
         $mform->addHelpButton('created_by', 'filter_by_user', 'local_tickets');
 
-        $this->add_action_buttons(false, 'Filter');
+        if (empty($this->_customdata['hidebuttons'])) {
+            $this->add_action_buttons(false, get_string('filter', 'local_tickets'));
+        }
     }
+
 }

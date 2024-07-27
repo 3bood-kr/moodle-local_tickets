@@ -47,10 +47,14 @@ $string['last_updated_at'] = 'Last Updated at';
 $string['last_updated_by'] = 'Last Updated by';
 $string['manage_tickets'] = 'Manage Tickets';
 $string['mobile'] = 'Mobile';
+$string['mobile_help'] = '
+Example:
++962555555555';
 $string['modulename'] = 'Tickets Support';
 $string['networkable_help'] = 'If enabled, this tracker will be openly exposed to remote site. Users from remote site will
 be able to post even if they have no local account. A Mnet account will be created on the fly. This will though only
 be possible if tracker Mnet services are properly configurated each side.';
+$string['new_ticket_submitted'] = 'New Ticket Have Been Submitted';
 $string['num_records'] = '{$a} Records';
 $string['open'] = 'Open';
 $string['operation'] = 'Operation';
@@ -79,3 +83,15 @@ $string['ticket_id'] = 'Ticket ID';
 $string['title'] = 'Title';
 $string['view_my_tickets'] = 'View My Tickets';
 $string['you_have_num_tickets'] = 'You Have {$a} Tickets.';
+$string['attachments'] = 'Attachments';
+$string['ticket_submission_success'] = 'Ticket Submitted Succefully';
+$string['ticket_submission_fail'] = 'Failed to Submit Ticket.';
+$string['status_change_success'] = 'Status Changed Successfully.';
+$string['status_change_fail'] = 'Failed to Change Status.';
+$string['new_ticket_submitted'] = 'A New Ticket Have Been Submitted.';
+$string['filter'] = 'Filter';
+$string['my_tickets'] = 'My Tickets';
+$string['records'] = 'Records';
+$string['no_tickets_found'] = 'No Tickets Found.';
+$string['confirm_ticket_delete'] = 'Are you sure yo want to delete this ticket?';
+$string['edit_status'] = 'Edit Status';

@@ -25,6 +25,8 @@
 namespace local_tickets;
 
 use context_system;
+use context_user;
+use moodle_url;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
@@ -61,6 +63,7 @@ class lib {
      * @return \stdClass on success.
      */
     public static function init() {
+        global $USER;
         $context = context_system::instance();
         self::$caps['canviewtickets'] = has_capability('local/tickets:viewtickets', $context);
         self::$caps['candeletetickets'] = has_capability('local/tickets:deletetickets', $context);
@@ -74,10 +77,11 @@ class lib {
      *
      * @return \stdClass on success.
      */
-    public static function get_tickets($limitfrom, $conditions=null, $sort='created_at DESC') {
+    public static function get_tickets($limitfrom = null, $conditions=null, $sort='created_at DESC') {
         global $DB, $USER;
-        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, TICKETS_PAGE_SIZE));
-        $tickets = self::format_tickets_date($tickets);
+        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, 15));
+        $tickets = self::format_tickets($tickets);
+        $tickets = self::shortenticketscontent($tickets);
         return $tickets;
     }
 
@@ -92,7 +96,7 @@ class lib {
             return;
         }
         $ticket = $DB->get_record('local_tickets', ['created_by' => $userid]);
-        $ticket = self::format_tickets_date($ticket);
+        $ticket = self::format_tickets($ticket);
         return $ticket;
     }
 
@@ -103,7 +107,8 @@ class lib {
     public static function get_own_tickets() {
         global $DB, $USER;
         $tickets = array_values($DB->get_records('local_tickets', ['created_by' => intval($USER->id)], 'created_at DESC'));
-        $tickets = self::format_tickets_date($tickets);
+        $tickets = self::format_tickets($tickets);
+        $tickets = self::shortenticketscontent($tickets);
         return $tickets;
     }
 
@@ -118,7 +123,7 @@ class lib {
             return null;
         };
         $ticket = $DB->get_record('local_tickets', ['id' => $ticketid]);
-        $ticket = self::format_tickets_date($ticket);
+        $ticket = self::format_tickets($ticket);
         return $ticket;
     }
 
@@ -180,10 +185,14 @@ class lib {
      * @return boolean on success.
      */
     public static function delete_ticket($ticketid) {
-        if (!self::$caps['candeletetickets'] || empty($ticketid)) {
+        if (empty($ticketid)) {
             return false;
         }
-        global $DB;
+        global $DB, $USER;
+        $ticket = $DB->get_record('local_tickets', ['id' => $ticketid], 'created_by');
+        if($USER->id != $ticket->created_by && !self::$caps['candeletetickets']){
+            return false;
+        }
         $success = $DB->delete_records('local_tickets', ['id' => $ticketid]);
         return $success;
     }
@@ -197,7 +206,6 @@ class lib {
         if (!self::$caps['cansubmittickets'] || !$formdata) {
             return false;
         }
-
         global $USER, $DB;
         $record = new stdClass();
         $record->title = $formdata->title;
@@ -208,8 +216,15 @@ class lib {
         $record->created_at = time();
         $record->updated_at = time();
         $record->updated_by = $USER->id;
-        $success = $DB->insert_record('local_tickets', $record);
-        return $success;
+        $ticketid = $DB->insert_record('local_tickets', $record, true);
+        if($ticketid){
+            // Save Files.
+            $context = context_system::instance();
+            file_save_draft_area_files($formdata->attachments, $context->id, 'local_tickets', 'attachment', $ticketid);
+            // Notify Managers that a new ticket is submitted.
+            self::send_notification($ticketid);
+        }
+        return $ticketid;
     }
 
     /**
@@ -240,11 +255,21 @@ class lib {
      * @param $ticketid.
      * @return \stdClass[] on success.
      */
-    public static function get_comments($ticketid) {
+    public static function get_comments($ticketid, $limitfrom, $conditions=null, $sort='created_at DESC') {
         global $DB;
-        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid], 'created_at DESC');
+        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid] , $sort, '*', $limitfrom, COMMENTS_PAGE_SIZE);
         $comments = self::get_formatted_comments($comments);
         return $comments;
+    }
+
+        /**
+     * Get count of ticket comments.
+     * @return integer on success.
+     */
+    public static function get_comments_count($ticketid) {
+        global $DB;
+        $count = $DB->count_records('local_tickets_comments', ['ticket_id' => $ticketid]);
+        return $count;
     }
 
     /**
@@ -285,16 +310,22 @@ class lib {
      * Get the tickets with formatted date.
      * @return \stdClass on success.
      */
-    private static function format_tickets_date($tickets) {
-        $format = '%b %d,%Y, %I:%M %p';
+    private static function format_tickets($tickets) {
+        // Formdat Date.
+        $format = '%d, %m, %Y, %I:%M %p';
         if ($tickets instanceof \stdClass) {
+            // Get the current language
             $tickets->created_at = userdate($tickets->created_at, $format);
             $tickets->updated_at = userdate($tickets->updated_at, $format);
+
+            // Add Localized status string.
+            $tickets->localizedstatus = get_string($tickets->status, 'local_tickets');
         }
         if (is_array($tickets)) {
             for ($i = 0; $i < count($tickets); $i++) {
                 $tickets[$i]->created_at = userdate($tickets[$i]->created_at, $format);
                 $tickets[$i]->updated_at = userdate($tickets[$i]->updated_at, $format);
+                $tickets[$i]->localizedstatus = get_string($tickets[$i]->status, 'local_tickets');
             }
         }
         return $tickets;
@@ -360,4 +391,50 @@ class lib {
         }
         return true;
     }
+
+    /**
+     * Send Notification for admin.
+     * *
+     * @return boolean.
+     */
+    public static function send_notification($id){
+
+        $capabilities = ['local/tickets:edittickets', 'local/tickets:deletetickets'];
+        $users =  get_users_by_capability(context_system::instance(), $capabilities);
+
+        $message = new \core\message\message();
+        $message->component = 'moodle';
+        $message->name = 'notices';
+        $message->courseid = SITEID;
+        $message->userfrom = \core_user::get_noreply_user();
+        $message->subject = get_string('new_ticket_submitted', 'local_tickets');
+        $message->fullmessage = get_string('new_ticket_submitted', 'local_tickets');
+        $message->fullmessageformat = FORMAT_HTML;
+        $message->fullmessagehtml = get_string('new_ticket_submitted', 'local_tickets');
+        $message->smallmessage = get_string('new_ticket_submitted', 'local_tickets');
+        $contexturl = new moodle_url('/local/tickets/view.php', ['id' => $id]);
+        $message->contexturl = $contexturl->out();
+        $message->contexturlname = 'Ticket';
+
+        foreach($users as $user){
+            $message->userto = $user;
+            message_send($message);
+        }
+
+    }
+
+    /**
+     * Check if user is logged in.
+     * *
+     * .
+     */
+    public static function index_redirect() {
+        global $USER;
+        self::init();
+        if (self::$caps['canmanagetickets']) {
+            redirect(new moodle_url('/local/tickets/manage.php'));
+        }
+        redirect(new moodle_url('/local/tickets/mytickets.php'));
+    }
+
 }

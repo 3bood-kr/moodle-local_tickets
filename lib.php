@@ -29,19 +29,36 @@ use local_tickets\lib;
  */
 function local_tickets_before_footer() {
     global $PAGE, $USER, $OUTPUT;
-    if (!get_config('local_tickets', 'showwidget')) {
-        return;
-    }
+    lib::init();
     // Show widget for logged in users only.
-    if ($USER->id == 0 ||$USER->id == 1) {
+    if (!lib::is_logged_in()) {
         return;
     }
 
     // Removed: 'maintenance', 'report'.
-    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin'];
+    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
+        
+        $title = get_string('my_tickets', 'local_tickets');
+        $owntickets = true;
 
-        echo $OUTPUT->render_from_template('local_tickets/widget', \context_system::instance());
+        if (lib::$caps['canmanagetickets']) {
+            $title = get_string('manage_tickets', 'local_tickets');
+            // all tickets to manage them since user is admin.
+            $owntickets = false;
+        }
+        
+        $PAGE->requires->js_call_amd(
+            'local_tickets/modaldialouge',
+            'init',
+            ['[data-action=openmodaldialouge]',
+             $title,
+             $owntickets,
+            ],
+        );
+        $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
+
+        
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',
             'modalForm',
@@ -50,5 +67,57 @@ function local_tickets_before_footer() {
             get_string('submit_ticket', 'local_tickets'),
             ['hidebuttons' => 1]],
         );
+
+        echo $OUTPUT->render_from_template('local_tickets/widget', ['title' => $title]);
     }
 }
+
+function local_tickets_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    global $DB;
+
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
+        return false;
+    }
+
+    require_login();
+
+    // Make sure the filearea is one of those used by local_tickets plugin.
+    if ($filearea != 'attachment') {
+        return false;
+    }
+
+    $itemid = (int)array_shift($args);
+
+
+    $fs = get_file_storage();
+
+    $filename = array_pop($args);
+    if (empty($args)) {
+        $filepath = '/';
+    } else {
+        $filepath = '/'.implode('/', $args).'/';
+    }
+
+    $file = $fs->get_file($context->id, 'local_tickets', $filearea, $itemid, $filepath, $filename);
+    if (!$file) {
+        return false;
+    }
+
+    // finally send the file
+    send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
+}
+
+// /**
+//  * This is used to send filter form html
+//  * to modaldialouge.js so it be rendered
+//  * in modaldialouge mustache
+//  * 
+//  * @param array $args List of named arguments for the fragment loader.
+//  * @return string
+//  */
+// function local_tickets_output_fragment_new_filter_form($args){
+//     global $CFG;
+//     require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
+//     $filterform =  new filter_tickets(null, ['hidebuttons' => 1]);
+//     return $filterform->render();
+// }
