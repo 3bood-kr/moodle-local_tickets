@@ -201,8 +201,22 @@ class local_tickets_renderer extends plugin_renderer_base {
             }
         }
 
-        $comments = lib::get_comments($ticketid);
+
+        // Check for page param for comments.
+        $page = optional_param('page', 0, PARAM_INT);
+        if ($page < 0) {
+            $page = 0;
+        }
+        $limitfrom = ($page) * COMMENTS_PAGE_SIZE;
+        $comments = lib::get_comments($ticketid, $limitfrom);
         $template->comments = $comments;
+
+        // Send pagination to template.
+        $totalcount = lib::get_comments_count($ticketid);
+        if ($totalcount > COMMENTS_PAGE_SIZE) {
+            $pagedurl = new moodle_url('/local/tickets/view.php', ['id' => $ticketid]);
+            $template->pager = $this->output->paging_bar($totalcount, $page , COMMENTS_PAGE_SIZE, $pagedurl, 'page');
+        }
 
         return $this->output->render_from_template('local_tickets/viewticket', $template);
     }

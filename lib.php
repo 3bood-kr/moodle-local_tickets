@@ -44,7 +44,7 @@ function local_tickets_before_footer() {
 
         if (lib::$caps['canmanagetickets']) {
             $title = get_string('manage_tickets', 'local_tickets');
-            // This gets all tickets for admin.
+            // all tickets to manage them since user is admin.
             $owntickets = false;
         }
         
@@ -106,3 +106,18 @@ function local_tickets_pluginfile($course, $cm, $context, $filearea, $args, $for
     // finally send the file
     send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
 }
+
+// /**
+//  * This is used to send filter form html
+//  * to modaldialouge.js so it be rendered
+//  * in modaldialouge mustache
+//  * 
+//  * @param array $args List of named arguments for the fragment loader.
+//  * @return string
+//  */
+// function local_tickets_output_fragment_new_filter_form($args){
+//     global $CFG;
+//     require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
+//     $filterform =  new filter_tickets(null, ['hidebuttons' => 1]);
+//     return $filterform->render();
+// }

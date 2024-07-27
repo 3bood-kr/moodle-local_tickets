@@ -255,11 +255,21 @@ class lib {
      * @param $ticketid.
      * @return \stdClass[] on success.
      */
-    public static function get_comments($ticketid) {
+    public static function get_comments($ticketid, $limitfrom, $conditions=null, $sort='created_at DESC') {
         global $DB;
-        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid], 'created_at DESC');
+        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid] , $sort, '*', $limitfrom, COMMENTS_PAGE_SIZE);
         $comments = self::get_formatted_comments($comments);
         return $comments;
+    }
+
+        /**
+     * Get count of ticket comments.
+     * @return integer on success.
+     */
+    public static function get_comments_count($ticketid) {
+        global $DB;
+        $count = $DB->count_records('local_tickets_comments', ['ticket_id' => $ticketid]);
+        return $count;
     }
 
     /**

@@ -31,7 +31,8 @@ require_login();
 require_once($CFG->dirroot . '/local/tickets/classes/form/changeticketstatusform.php');
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/comments.php');
-require_login();
+
+define('COMMENTS_PAGE_SIZE', 15);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('View Ticket');
