@@ -140,14 +140,14 @@ class submitticketform extends \core_form\dynamic_form {
         $mform->addElement(
             'filemanager',
             'attachments',
-            get_string('attachment', 'moodle'),
+            get_string('attachments', 'local_tickets'),
             null,
             [
                 'subdirs' => 0,
                 'maxbytes' => $maxbytes,
                 'areamaxbytes' => 10485760,
                 'maxfiles' => 50,
-                'accepted_types' => ['.jpg', '.jpeg', '.png', '.mp4', '.avi', '.mov'],
+                'accepted_types' => ['.jpg', '.jpeg', '.png', '.mp4', '.mov'],
                 'return_types' => $CFG->FILE_INTERNAL | $CFG->FILE_EXTERNAL,
             ]
         );

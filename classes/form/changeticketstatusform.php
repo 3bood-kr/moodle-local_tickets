@@ -137,7 +137,9 @@ class changeticketstatusform extends \core_form\dynamic_form {
         // Hidden element for the ticket set in set_data_for_dynamic_submission().
         $mform->addElement('hidden', 'id', '');
         $mform->setType('id', PARAM_INT);
-        if ($PAGE->url->get_path() == '/moodle/local/tickets/view.php') {
+        
+        // Might Need To Change this.
+        if ($PAGE->url->get_path() == '/local/tickets/view.php') {
             $id = required_param('id', PARAM_INT);
             $mform->setDefault('id', $id);
         }

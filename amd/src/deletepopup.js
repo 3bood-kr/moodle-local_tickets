@@ -1,6 +1,7 @@
 import {call as ajaxCall} from 'core/ajax';
 import Notification from 'core/notification';
 import {add as addToast} from 'core/toast';
+import {get_string as getString} from 'core/str';
 
 const addNotification = (msg, type) => {
     addToast(msg, {type: type});
@@ -12,16 +13,18 @@ export const init = () => {
             e.preventDefault();
             const ticketId = element.dataset.ticketId;
             Notification.confirm(
-                'Confirm',
-                'Are you sure you want to delete this Ticket?',
-                'Yes', // Delete.
-                'No', // Cancel.
+                getString('confirm'),
+                getString('confirm_ticket_delete', 'local_tickets'),
+                getString('yes'), // Delete.
+                getString('no'), // Cancel.
                 () => {
                     e.preventDefault();
                     ajaxCall([{
                         methodname: 'local_tickets_delete_ticket', 
                         args: {id: ticketId},
                         done: function(response) {
+                            console.log(ticketId);
+                            console.log(response);
                             if(response.status == 200){
                                 location.reload();
                             }
@@ -30,7 +33,8 @@ export const init = () => {
                             }
                         },
                         fail: function(ex) {
-                            addNotification(`Failed to delete ticket: ${ex.message}`, 'danger');
+                            addNotification(`Failed to delete ticket: ${ex}`, 'danger');
+                            console.log(ex);
                         }
                     }])
                 },

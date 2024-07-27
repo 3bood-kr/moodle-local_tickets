@@ -22,10 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core_external\external_api;
-use core_external\external_function_parameters;
-use core_external\external_single_structure;
-use core_external\external_value;
 use local_tickets\lib;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +34,7 @@ require_once($CFG->libdir . "/externallib.php");
  * @copyright  2024 3bood_kr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_tickets_external extends external_api {
+class local_tickets_external extends external_api{
 
     /**
      * Returns description of method parameters
@@ -59,13 +55,7 @@ class local_tickets_external extends external_api {
      * @return bool true on success
      */
     public static function delete_ticket($id) {
-        if (!has_capability('local/tickets:deletetickets', context_system::instance())) {
-            return [
-                'status' => 403,
-                'message' => 'Forbidden',
-            ];;
-        }
-        $id = json_decode($id);
+        $id = json_decode(strval($id));
         lib::init();
         $success = lib::delete_ticket($id);
         if ($success) {
@@ -89,6 +79,59 @@ class local_tickets_external extends external_api {
             [
                 'status' => new external_value(PARAM_INT, 'The status of the result'),
                 'message' => new external_value(PARAM_TEXT, 'A message related to the result'),
+            ]
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_tickets_parameters() {
+        return new external_function_parameters(
+            ['own' => new external_value(PARAM_BOOL, 'Get all tickets or own.'), ]
+        );
+    }
+
+
+    /**
+     * Fetch tickets
+     * 
+     * @return bool true on success
+     */
+    public static function get_tickets($own = true) {
+        lib::init();
+        if($own){
+            $tickets = lib::get_own_tickets();
+        }else{
+            $tickets = lib::get_tickets();
+        }
+
+        $tickets = json_encode($tickets);
+        if ($tickets) {
+            return [
+                'status' => 200,
+                'message' => 'Ticket fetched successfully',
+                'data' => $tickets,
+            ];
+        }
+        return [
+            'status' => 400,
+            'message' => 'Error Occured. Tickets not fetched.',
+            'data' => '',
+        ];
+    }
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_tickets_returns() {
+        return new external_single_structure(
+            [
+                'status' => new external_value(PARAM_INT, 'The status of the result'),
+                'message' => new external_value(PARAM_TEXT, 'A message related to the result'),
+                'data' => new external_value(PARAM_RAW, 'Tickets Data'),
             ]
         );
     }

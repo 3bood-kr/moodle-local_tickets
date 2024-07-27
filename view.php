@@ -48,7 +48,7 @@ if ($statusform->is_cancelled()) {
 if ($statusform->is_submitted() && $formdata = $statusform->get_data()) {
     lib::init();
     if (lib::changeticketstatus($formdata)) {
-        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'), 'Status Changed Successfully');
+        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'));
     }
 }
 

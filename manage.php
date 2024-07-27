@@ -41,6 +41,7 @@ $PAGE->set_title('Manage Tickets');
 
 $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
 
+
 $filterform = new filter_tickets();
 
 $action = optional_param('action', '', PARAM_NOTAGS);
@@ -48,7 +49,7 @@ if ($action == 'delete') {
     $ticketid = optional_param('id', '', PARAM_NOTAGS);
     lib::init();
     if (lib::delete_ticket($ticketid)) {
-        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'), 'removed successfully');
+        redirect(new moodle_url($CFG->wwwroot . '/local/tickets/manage.php'));
     }
 }
 

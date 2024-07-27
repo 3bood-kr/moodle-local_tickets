@@ -29,19 +29,36 @@ use local_tickets\lib;
  */
 function local_tickets_before_footer() {
     global $PAGE, $USER, $OUTPUT;
-    if (!get_config('local_tickets', 'showwidget')) {
-        return;
-    }
+    lib::init();
     // Show widget for logged in users only.
     if (!lib::is_logged_in()) {
         return;
     }
 
     // Removed: 'maintenance', 'report'.
-    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect', 'admin'];
+    $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
+        
+        $title = get_string('my_tickets', 'local_tickets');
+        $owntickets = true;
 
-        echo $OUTPUT->render_from_template('local_tickets/widget', \context_system::instance());
+        if (lib::$caps['canmanagetickets']) {
+            $title = get_string('manage_tickets', 'local_tickets');
+            // This gets all tickets for admin.
+            $owntickets = false;
+        }
+        
+        $PAGE->requires->js_call_amd(
+            'local_tickets/modaldialouge',
+            'init',
+            ['[data-action=openmodaldialouge]',
+             $title,
+             $owntickets,
+            ],
+        );
+        $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
+
+        
         $PAGE->requires->js_call_amd(
             'local_tickets/modalforms',
             'modalForm',
@@ -50,6 +67,8 @@ function local_tickets_before_footer() {
             get_string('submit_ticket', 'local_tickets'),
             ['hidebuttons' => 1]],
         );
+
+        echo $OUTPUT->render_from_template('local_tickets/widget', ['title' => $title]);
     }
 }
 

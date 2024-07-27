@@ -19,24 +19,24 @@
 <div class="container mt-5">
     {{^hastickets}}
         <div class="alert alert-warning" role="alert">
-          No tickets found. Try to clear filters.
+          {{#str}}no_tickets_found, local_tickets{{/str}}
         </div>
     {{/hastickets}}
 
     {{{filterform}}}
     {{#canviewtickets}}
         {{#hastickets}}
-            <span class="font-weight-bold">{{ticketscount}}</span> Records.
+            <span class="font-weight-bold">{{ticketscount}}</span> {{#str}}records, local_tickets{{/str}}.
             <div class="table-responsive-md mt-2">
                 <table class="table tickets-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Created At</th>
-                            <th>Operation</th>
+                            <th>{{#str}}id, local_tickets{{/str}}</th>
+                            <th>{{#str}}title, local_tickets{{/str}}</th>
+                            <th>{{#str}}description, local_tickets{{/str}}</th>
+                            <th>{{#str}}status, local_tickets{{/str}}</th>
+                            <th>{{#str}}created_at, local_tickets{{/str}}</th>
+                            <th>{{#str}}operation, local_tickets{{/str}}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +46,7 @@
                                 <td>{{title}}</td>
                                 <td>{{description}}</td>
                                 <td class="status status-{{status}}">
-                                    <a href="#" class="text-reset text-decoration-none" data-action="openchangestatusform" data-ticket-id="{{id}}">{{status}}</a>
+                                    <a href="#" class="text-reset text-decoration-none" data-action="openchangestatusform" data-ticket-id="{{id}}">{{localizedstatus}}</a>
                                 </td>
                                 <td>{{created_at}}</td>
                                 <td>
@@ -57,7 +57,7 @@
                                         </svg>
                                     </a>
                                     {{#candeletetickets}}
-                                        <a class="text-danger p-2 delete-ticket" href="{{config.wwwroot}}/local/tickets/manage.php?id={{id}}&action=delete" data-ticket-id="{{id}}" type="button" class="btn btn-danger">
+                                        <a class="text-danger p-2 delete-ticket" href="#" data-ticket-id="{{id}}" type="button" class="btn btn-danger">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                               <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
                                             </svg>

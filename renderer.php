@@ -93,7 +93,7 @@ class local_tickets_renderer extends plugin_renderer_base {
     public function render_manage_page($filterform) {
 
         if (!$this->caps['canmanagetickets']) {
-            return 'You are not supposed to be here bro';
+            return 'You are not supposed to be here';
         }
 
         // Check for page param.
@@ -116,7 +116,6 @@ class local_tickets_renderer extends plugin_renderer_base {
 
         // Get tickets with params if params exist.
         $tickets = lib::get_tickets($limitfrom, $params);
-        $tickets = lib::shortenticketscontent($tickets);
 
         $template = $this->inittemplate();
 
@@ -150,7 +149,7 @@ class local_tickets_renderer extends plugin_renderer_base {
         $canviewthisticket =
             $this->caps['canmanagetickets'] || $this->user->id == $ticket->created_by;
         if (!$canviewthisticket) {
-            return "You Can't View This Ticket bro";
+            return "You Can't View This Ticket";
         }
 
         $userfields = 'id,firstname,lastname,username,picture,imagealt';
