@@ -101,7 +101,7 @@ class local_tickets_renderer extends plugin_renderer_base {
         if ($page < 0) {
             $page = 0;
         }
-        $limitfrom = ($page) * TICKETS_PAGE_SIZE;
+        $limitfrom = ($page) * get_config('local_tickets', 'ticketspagesizesetting');
 
         // Check for filter params.
         $params = [];
@@ -129,9 +129,9 @@ class local_tickets_renderer extends plugin_renderer_base {
             // Send pagination to template.
             $totalcount = lib::get_tickets_count($params);
             $template->ticketscount = $totalcount;
-            if ($totalcount > TICKETS_PAGE_SIZE) {
+            if ($totalcount > get_config('local_tickets', 'ticketspagesizesetting')) {
                 $pagedurl = new moodle_url('/local/tickets/manage.php', $params);
-                $template->pager = $this->output->paging_bar($totalcount, $page , TICKETS_PAGE_SIZE, $pagedurl, 'page');
+                $template->pager = $this->output->paging_bar($totalcount, $page , get_config('local_tickets', 'ticketspagesizesetting'), $pagedurl, 'page');
             }
         }
         return $this->output->render_from_template('local_tickets/manage', $template);
@@ -144,12 +144,12 @@ class local_tickets_renderer extends plugin_renderer_base {
     public function render_viewticket_page($ticketid, $ticketstatusform, $commentform) {
         $ticket = lib::get_ticket($ticketid);
         if (!$ticket) {
-            return 'nah';
+            redirect(new moodle_url('/local/tickets/mytickets.php'), 'No such Ticket', null, \core\output\notification::NOTIFY_WARNING);
         }
         $canviewthisticket =
             $this->caps['canmanagetickets'] || $this->user->id == $ticket->created_by;
         if (!$canviewthisticket) {
-            return "You Can't View This Ticket";
+            redirect(new moodle_url('/local/tickets/mytickets.php'), "You can't view this ticket", null, \core\output\notification::NOTIFY_WARNING);
         }
 
         $userfields = 'id,firstname,lastname,username,picture,imagealt';
@@ -207,15 +207,15 @@ class local_tickets_renderer extends plugin_renderer_base {
         if ($page < 0) {
             $page = 0;
         }
-        $limitfrom = ($page) * COMMENTS_PAGE_SIZE;
+        $limitfrom = ($page) * get_config('local_tickets', 'commentspagesizesettings');
         $comments = lib::get_comments($ticketid, $limitfrom);
         $template->comments = $comments;
 
         // Send pagination to template.
         $totalcount = lib::get_comments_count($ticketid);
-        if ($totalcount > COMMENTS_PAGE_SIZE) {
+        if ($totalcount > get_config('local_tickets', 'commentspagesizesettings')) {
             $pagedurl = new moodle_url('/local/tickets/view.php', ['id' => $ticketid]);
-            $template->pager = $this->output->paging_bar($totalcount, $page , COMMENTS_PAGE_SIZE, $pagedurl, 'page');
+            $template->pager = $this->output->paging_bar($totalcount, $page , get_config('local_tickets', 'commentspagesizesettings'), $pagedurl, 'page');
         }
 
         return $this->output->render_from_template('local_tickets/viewticket', $template);

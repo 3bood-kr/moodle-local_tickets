@@ -40,7 +40,7 @@ $PAGE->set_title('View Ticket');
 $renderer = $PAGE->get_renderer('local_tickets');
 $ticketid = required_param('id', PARAM_INT);
 
-$statusform = new changeticketstatusform();
+$statusform = new changeticketstatusform(null, ['ticketid' => $ticketid]);
 $commentform = new comments();
 
 if ($statusform->is_cancelled()) {

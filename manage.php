@@ -31,7 +31,7 @@ require_login();
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
 
-define('TICKETS_PAGE_SIZE', 15);
+define('TICKETS_PAGE_SIZE', 2);
 
 $PAGE->set_url(new moodle_url('/local/tickets/manage.php'));
 global $USER;

@@ -39,21 +39,13 @@ function local_tickets_before_footer() {
     $excludepages = ['embedded', 'frametop', 'popup', 'print', 'redirect'];
     if (!in_array($PAGE->pagelayout, $excludepages)) { // Do not show on pages that may use $OUTPUT.
         
-        $title = get_string('my_tickets', 'local_tickets');
-        $owntickets = true;
+        $title = lib::canmanagetickets() ?  get_string('manage_tickets', 'local_tickets') :  get_string('my_tickets', 'local_tickets');
 
-        if (lib::$caps['canmanagetickets']) {
-            $title = get_string('manage_tickets', 'local_tickets');
-            // all tickets to manage them since user is admin.
-            $owntickets = false;
-        }
-        
         $PAGE->requires->js_call_amd(
             'local_tickets/modaldialouge',
             'init',
             ['[data-action=openmodaldialouge]',
              $title,
-             $owntickets,
             ],
         );
         $PAGE->requires->js_call_amd('local_tickets/deletepopup', 'init');
@@ -107,17 +99,59 @@ function local_tickets_pluginfile($course, $cm, $context, $filearea, $args, $for
     send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
 }
 
-// /**
-//  * This is used to send filter form html
-//  * to modaldialouge.js so it be rendered
-//  * in modaldialouge mustache
-//  * 
-//  * @param array $args List of named arguments for the fragment loader.
-//  * @return string
-//  */
-// function local_tickets_output_fragment_new_filter_form($args){
-//     global $CFG;
-//     require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
-//     $filterform =  new filter_tickets(null, ['hidebuttons' => 1]);
-//     return $filterform->render();
-// }
+/**
+ * This is used to send filter form html
+ * to modaldialouge.js so it be rendered
+ * in modaldialouge mustache
+ * 
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function local_tickets_output_fragment_new_filter_form($args){
+    global $CFG;
+    require_once($CFG->dirroot . '/local/tickets/classes/form/filter_tickets.php');
+    $filterform =  new filter_tickets(null, ['hidebuttons' => 1]);
+    return $filterform->render();
+}
+
+
+/**
+ * Get modal dialoug HTML
+ * 
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function local_tickets_output_fragment_rerender_modal_dialouge($args){
+    global $CFG, $DB, $OUTPUT;
+    lib::init();
+    $totalcount = 0;
+    
+    if (lib::$caps['canmanagetickets']) {
+        $totalcount = lib::get_tickets_count();
+    }else{
+        $totalcount = lib::get_own_tickets_count();
+    }
+
+    $page = $args['page'] ?? 0;
+
+    $pager = $OUTPUT->paging_bar($totalcount, $page , get_config('local_tickets', 'ticketspagesizesetting'), '', '');
+
+    $limitfrom = ($page) * get_config('local_tickets', 'ticketspagesizesetting');
+    $tickets = [];
+
+    if (lib::$caps['canmanagetickets']) {
+        $tickets = lib::get_tickets($limitfrom);
+    }else{
+        $tickets = lib::get_own_tickets($limitfrom);
+    }
+
+    $template = new stdClass();
+    $template->tickets = $tickets;
+    $template->pager = $pager;
+
+    $result = $OUTPUT->render_from_template('local_tickets/modaldialouge', $template);
+    return $result;
+}
+ 
+
+

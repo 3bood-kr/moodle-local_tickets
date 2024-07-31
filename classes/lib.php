@@ -77,9 +77,9 @@ class lib {
      *
      * @return \stdClass on success.
      */
-    public static function get_tickets($limitfrom = null, $conditions=null, $sort='created_at DESC') {
+    public static function get_tickets($limitfrom = 0, $conditions=null, $sort='created_at DESC') {
         global $DB, $USER;
-        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, 15));
+        $tickets = array_values($DB->get_records('local_tickets', $conditions, $sort, '*', $limitfrom, get_config('local_tickets', 'ticketspagesizesetting')));
         $tickets = self::format_tickets($tickets);
         $tickets = self::shortenticketscontent($tickets);
         return $tickets;
@@ -104,9 +104,9 @@ class lib {
      * Get the tickets for current authorized user.
      * @return \stdClass[] on success.
      */
-    public static function get_own_tickets() {
+    public static function get_own_tickets($limitfrom = 0) {
         global $DB, $USER;
-        $tickets = array_values($DB->get_records('local_tickets', ['created_by' => intval($USER->id)], 'created_at DESC'));
+        $tickets = array_values($DB->get_records('local_tickets', ['created_by' => intval($USER->id)], 'created_at DESC', '*', $limitfrom, get_config('local_tickets', 'ticketspagesizesetting')));
         $tickets = self::format_tickets($tickets);
         $tickets = self::shortenticketscontent($tickets);
         return $tickets;
@@ -141,7 +141,7 @@ class lib {
      * Get tickets count with params.
      * @return integer on success.
      */
-    public static function get_tickets_count($params) {
+    public static function get_tickets_count($params = null) {
         global $DB;
         $count = $DB->count_records('local_tickets', $params);
         return $count;
@@ -257,7 +257,7 @@ class lib {
      */
     public static function get_comments($ticketid, $limitfrom, $conditions=null, $sort='created_at DESC') {
         global $DB;
-        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid] , $sort, '*', $limitfrom, COMMENTS_PAGE_SIZE);
+        $comments = $DB->get_records('local_tickets_comments', ['ticket_id' => $ticketid] , $sort, '*', $limitfrom, get_config('local_tickets', 'commentspagesizesettings'));
         $comments = self::get_formatted_comments($comments);
         return $comments;
     }
@@ -428,13 +428,13 @@ class lib {
      * *
      * .
      */
-    public static function index_redirect() {
-        global $USER;
-        self::init();
-        if (self::$caps['canmanagetickets']) {
-            redirect(new moodle_url('/local/tickets/manage.php'));
-        }
-        redirect(new moodle_url('/local/tickets/mytickets.php'));
-    }
+    // public static function index_redirect() {
+    //     global $USER;
+    //     self::init();
+    //     if (self::$caps['canmanagetickets']) {
+    //         redirect(new moodle_url('/local/tickets/manage.php'));
+    //     }
+    //     redirect(new moodle_url('/local/tickets/mytickets.php'));
+    // }
 
 }

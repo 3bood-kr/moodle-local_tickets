@@ -27,7 +27,7 @@ use local_tickets\lib;
 
 require_once(__DIR__ . '/../../config.php');
 require_login();
-lib::index_redirect();
+// lib::index_redirect();
 
 require_once($CFG->dirroot . '/local/tickets/classes/form/submitticketform.php');
 

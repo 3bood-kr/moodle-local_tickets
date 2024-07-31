@@ -25,8 +25,27 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $ADMIN->add('root',
-    new admin_externalpage('local_tickets',
-    get_string('pluginname', 'local_tickets'),
-    new moodle_url('/local/tickets/manage.php')));
+
+    $pagesizesettings = new admin_settingpage('local_tickets_settings', get_string('local_tickets', 'local_tickets'));
+
+    // Add a number setting.
+    $pagesizesettings->add(new admin_setting_configtext(
+        'local_tickets/ticketspagesizesetting',
+        get_string('ticketspagesize', 'local_tickets'),
+        '',
+        15, // Default value
+        PARAM_INT // Type of the setting
+    ));
+
+    $pagesizesettings->add(new admin_setting_configtext(
+        'local_tickets/commentspagesizesettings',
+        get_string('commentspagesize', 'local_tickets'),
+        '',
+        15, // Default value
+        PARAM_INT // Type of the setting
+    ));
+
+    // Add the settings page to the site administration.
+    $ADMIN->add('localplugins', $pagesizesettings);
+
 }

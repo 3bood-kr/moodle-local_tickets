@@ -138,10 +138,8 @@ class changeticketstatusform extends \core_form\dynamic_form {
         $mform->addElement('hidden', 'id', '');
         $mform->setType('id', PARAM_INT);
         
-        // Might Need To Change this.
-        if ($PAGE->url->get_path() == '/local/tickets/view.php') {
-            $id = required_param('id', PARAM_INT);
-            $mform->setDefault('id', $id);
+        if($this->_customdata['ticketid']){
+            $mform->setDefault('id', $this->_customdata['ticketid']);
         }
 
         $mform->addElement('hidden', 'hidebuttons');
