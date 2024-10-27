@@ -37,6 +37,8 @@ define('COMMENTS_PAGE_SIZE', 15);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title('View Ticket');
 
+$PAGE->requires->js_call_amd('local_tickets/lightbox');
+
 $renderer = $PAGE->get_renderer('local_tickets');
 $ticketid = required_param('id', PARAM_INT);
 

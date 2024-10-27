@@ -144,12 +144,12 @@ class local_tickets_renderer extends plugin_renderer_base {
     public function render_viewticket_page($ticketid, $ticketstatusform, $commentform) {
         $ticket = lib::get_ticket($ticketid);
         if (!$ticket) {
-            redirect(new moodle_url('/local/tickets/mytickets.php'), 'No such Ticket', null, \core\output\notification::NOTIFY_WARNING);
+            return 'nah';
         }
         $canviewthisticket =
             $this->caps['canmanagetickets'] || $this->user->id == $ticket->created_by;
         if (!$canviewthisticket) {
-            redirect(new moodle_url('/local/tickets/mytickets.php'), "You can't view this ticket", null, \core\output\notification::NOTIFY_WARNING);
+            return "You Can't View This Ticket";
         }
 
         $userfields = 'id,firstname,lastname,username,picture,imagealt';
@@ -166,7 +166,10 @@ class local_tickets_renderer extends plugin_renderer_base {
         $template->owner_profile_img = $this->output->user_picture($owner);
         $template->owner_name = fullname($owner);
 
-        $attachments = [];
+        $attachments = [
+            'images' => [],
+            'videos' => [],
+        ];
         $fs = get_file_storage();
         if ($files = $fs->get_area_files(context_system::instance()->id, 'local_tickets', 'attachment', $ticketid, 'sortorder', false)) {
             // Look through each file being managed
@@ -176,11 +179,11 @@ class local_tickets_renderer extends plugin_renderer_base {
                 // Check if the file is an image
                 if (strpos($file->get_mimetype(), 'image/') === 0) {
                     // Display the image
-                    $attachments[] = "<img style='width:250px; height:auto;' src='$fileurl' />";
+                    $attachments['images'][] = "<a href='$fileurl' data-lightbox='gallery'><img style='width:250px; height:auto;' src='$fileurl' /></a>";
                 }
                 if (strpos($file->get_mimetype(), 'video/') === 0) {
                     // Display the video
-                    $attachments[] = "<video controls style='max-width:100%;'><source src='$fileurl' type='" . $file->get_mimetype() . "'></video>";
+                    $attachments['videos'][] = "<a href='$fileurl'><video controls style='width:100%; height:100%;'><source src='$fileurl' type='" . $file->get_mimetype() . "'></video></a>";
                 }
             }
         }
@@ -207,15 +210,15 @@ class local_tickets_renderer extends plugin_renderer_base {
         if ($page < 0) {
             $page = 0;
         }
-        $limitfrom = ($page) * get_config('local_tickets', 'commentspagesizesettings');
+        $limitfrom = ($page) * COMMENTS_PAGE_SIZE;
         $comments = lib::get_comments($ticketid, $limitfrom);
         $template->comments = $comments;
 
         // Send pagination to template.
         $totalcount = lib::get_comments_count($ticketid);
-        if ($totalcount > get_config('local_tickets', 'commentspagesizesettings')) {
+        if ($totalcount > COMMENTS_PAGE_SIZE) {
             $pagedurl = new moodle_url('/local/tickets/view.php', ['id' => $ticketid]);
-            $template->pager = $this->output->paging_bar($totalcount, $page , get_config('local_tickets', 'commentspagesizesettings'), $pagedurl, 'page');
+            $template->pager = $this->output->paging_bar($totalcount, $page , COMMENTS_PAGE_SIZE, $pagedurl, 'page');
         }
 
         return $this->output->render_from_template('local_tickets/viewticket', $template);
